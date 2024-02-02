@@ -8,7 +8,7 @@ WATCH_DIRECTORY = "C:\\SCRIPTS"
 WATCH_DELAY = 1
 
 # Check The WATCH_DIRECTORY and its children
-WATCH_RECURSIVELY = False
+WATCH_RECURSIVELY = True
 
 # whether to watch for directory events
 DO_WATCH_DIRECTORIES = True
