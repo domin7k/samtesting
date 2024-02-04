@@ -1,4 +1,3 @@
-import shutil
 from DelteAndCreateHandler import DelteAndCreateHandler
 
 
@@ -6,20 +5,6 @@ from watchdog.observers import Observer
 
 
 import datetime
-import os
-import shlex
-import subprocess
-
-def create_or_clear_directory(directory_path, prefix="sorted"):
-    if os.path.exists(directory_path):
-        files = os.listdir(directory_path)
-        if all(file.startswith(prefix) for file in files):
-            shutil.rmtree(directory_path)
-            print(f"Deleted {directory_path}.")
-        else:
-            print(f"{directory_path} contains files not starting with '{prefix}'.")
-            exit(-1)
-    os.makedirs(directory_path)
 
 
 class TempFileWatcher:
@@ -31,14 +16,13 @@ class TempFileWatcher:
     fileSizes = {}
 
     # The observer is the class that watches for any file system change and then dispatches the event to the event handler.
-    def __init__(self, watchDirectory, fileName, watchDelay, watchRecursively, doWatchDirectories):
+    def __init__(self, watchDirectory, totrack, watchDelay, watchRecursively, doWatchDirectories):
         # Initialize variables in relation
         self.watchDirectory = watchDirectory
-        self.fileName = fileName
+        self.totrack = totrack
         self.watchDelay = watchDelay
         self.watchRecursively = watchRecursively
         self.doWatchDirectories = doWatchDirectories
-        create_or_clear_directory(watchDirectory)
 
 
         # Create an instance of watchdog.observer
@@ -72,41 +56,7 @@ class TempFileWatcher:
         print("Observer is running:", self.observer.name)
         self.start()
         try:
-            with open("./samparams") as file:
-                lines = [line.rstrip() for line in file]
-            for line in lines:
-                params = shlex.split(line)
-                print(params)
-                directory = self.watchDirectory
-                out = f"{directory}/sorted.bam"
-                result = subprocess.run(["../samtools/samtools"] + params, capture_output=True)
-                print(result.stdout)
-                self.fileSizes[out][1]=datetime.datetime.now()
-                self.fileSizes[out][2]=os.path.getsize(out)
-                drive_usage = 0
-                sliding_usage: list = []
-                max_usage = 0
-                for name, data in sorted(self.fileSizes.items(), key=lambda x : x[0]):
-                    start_time = data[0]
-                    end_time = data[1]
-                    duration = end_time - start_time
-                    file_size = data[2]
-                    deleted = data[3]
-                    drive_usage += file_size
-                    sliding_usage = [value for value in sliding_usage if value[3] == 0 or value[3] > start_time]
-                    sliding_usage.append(data)
-                    current_usage = 0
-                    for i in sliding_usage:
-                        current_usage += i[2]
-                    if (current_usage>max_usage):
-                        max_usage = current_usage
-                    print(f"Name: {name}")
-                    print(f"Active Time: {duration}")
-                    print(f"final size: {file_size} Bytes")
-                    print(f"deleted at {deleted}")
-                    print("------------------------")
-            print(f"Maximal concurrent drive usage: {max_usage}")
-            print(f"Total bytes written: {drive_usage}")
+            self.totrack()
             self.stop()
         except Exception as error:
             print(error)
@@ -114,8 +64,8 @@ class TempFileWatcher:
         self.observer.join()
 
     def stop(self):
+        self.event_handler.write_json()
         print("Observer Stopped:", self.observer.name)
-
         now = (datetime.datetime.now()).strftime("%Y-%m-%d %H:%M:%S")
         msg = f"Observer: {self.observer.name} - Stopped On: {now}"
         print(msg)

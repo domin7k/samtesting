@@ -1,2 +1,2 @@
-sort -m 1G -o ./outputOfTest/sorted.bam /home/dominik/ba/minimap2/small.bam 
-sort -m 300M -@ 3 -o ./outputOfTest/sorted.bam /home/dominik/ba/minimap2/small.bam 
+sort -m 400M -o ../outputOfTest_1/sorted.bam /home/dominik/ba/minimap2/small.bam
+sort -m 500M -o ../outputOfTest_2/sorted.bam /home/dominik/ba/minimap2/small.bam

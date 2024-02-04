@@ -1,11 +1,13 @@
 # The Observer watches for any file change and then dispatches the respective events to an event handler.
 # The event handler will be notified when an event occurs.
+import datetime
 import os
+import shlex
+import subprocess
 from TempFileWatcher import TempFileWatcher
 import config
 
 
-# Class that inherits from FileSystemEventHandler for handling the events sent by the Observer
 def is_dir_path(path):
     """Utility function to check whether a path is an actual directory"""
     if os.path.isdir(path) or not os.path.exists(path):
@@ -14,42 +16,48 @@ def is_dir_path(path):
         raise NotADirectoryError(path)
 
 
+def runSam():
+    with open("./samparams") as file:
+        lines = [line.rstrip() for line in file]
+    for line in lines:
+        params = shlex.split(line)
+        print(params)
+        result = subprocess.run(["../samtools/samtools"] + params, capture_output=True, text=True)
+        print(result.stderr)
+        print(result.stdout)
+    #     drive_usage = 0
+    #     sliding_usage: list = []
+    #     max_usage = 0
+    #     for name, data in sorted(self.fileSizes.items(), key=lambda x : x[0]):
+    #         start_time = data[0]
+    #         end_time = data[1]
+    #         duration = end_time - start_time
+    #         file_size = data[2]
+    #         deleted = data[3]
+    #         drive_usage += file_size
+    #         sliding_usage = [value for value in sliding_usage if value[3] == 0 or value[3] > start_time]
+    #         sliding_usage.append(data)
+    #         current_usage = 0
+    #         for i in sliding_usage:
+    #             current_usage += i[2]
+    #         if (current_usage>max_usage):
+    #             max_usage = current_usage
+    #         print(f"Name: {name}")
+    #         print(f"Active Time: {duration}")
+    #         print(f"final size: {file_size} Bytes")
+    #         print(f"deleted at {deleted}")
+    #         print("------------------------")
+    # print(f"Maximal concurrent drive usage: {max_usage}")
+    # print(f"Total bytes written: {drive_usage}")
+    
+
 if __name__ == "__main__":
-    import argparse
-    parser = argparse.ArgumentParser(
-        description="Watchdog script for watching for files & directories' changes")
-    parser.add_argument("path",
-                        default=config.WATCH_DIRECTORY,
-                        type=is_dir_path,
-                        )
-    parser.add_argument("-n", "--name",
-                        help=f"name of the file to be sorted",
-                        default="test.bam",
-                        type=str,
-                        )
-    parser.add_argument("-d", "--watch-delay",
-                        help=f"Watch delay, default is {config.WATCH_DELAY}",
-                        default=config.WATCH_DELAY,
-                        type=int,
-                        )
-    parser.add_argument("-r", "--recursive",
-                        action="store_true",
-                        help=f"Whether to recursively watch for the path's children, default is {config.WATCH_RECURSIVELY}",
-                        default=config.WATCH_RECURSIVELY,
-                        )
-    parser.add_argument("--watch-directories",
-                        action="store_true",
-                        help=f"Whether to watch directories, default is {config.DO_WATCH_DIRECTORIES}",
-                        default=config.DO_WATCH_DIRECTORIES,
-                        )
-    # parse the arguments
-    args = parser.parse_args()
     # define & launch the log watcher
     log_watcher = TempFileWatcher(
-        watchDirectory=args.path,
-        fileName = args.name,
-        watchDelay=args.watch_delay,
-        watchRecursively=args.recursive,
-        doWatchDirectories=args.watch_directories,
+        watchDirectory=config.WATCH_DIRECTORY,
+        totrack=runSam,
+        watchDelay=config.WATCH_DELAY,
+        watchRecursively=config.WATCH_RECURSIVELY,
+        doWatchDirectories=config.DO_WATCH_DIRECTORIES,
     )
     log_watcher.run()

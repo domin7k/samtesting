@@ -1,3 +1,4 @@
+import json
 from colorama import Fore, Style, init
 from watchdog.events import FileSystemEventHandler
 
@@ -28,6 +29,7 @@ def print_with_color(s, color=Fore.WHITE, brightness=Style.NORMAL, size=-1, **kw
 class DelteAndCreateHandler(FileSystemEventHandler):
     lastFile= None
     fileSizes: dict = {}
+    is_stopped = False
 
     def __init__(self, doWatchDirectories, fileSizes):
         self.doWatchDirectories = doWatchDirectories
@@ -41,22 +43,49 @@ class DelteAndCreateHandler(FileSystemEventHandler):
 
     def on_deleted(self, event):
         now = (datetime.datetime.now()).strftime("%Y-%m-%d %H:%M:%S")
-        self.fileSizes[event.src_path][3] = datetime.datetime.now()
         path = event.src_path
+        self.fileSizes[path][3] = datetime.datetime.now().timestamp()
         msg = f"{now} -- {event.event_type} -- File: {path}"
         print_with_color(msg, color=event2color[event.event_type])
 
     def on_created(self, event):
+        if self.is_stopped:
+            if(self.lastFile!=None and self.fileSizes[self.lastFile][1]== 0):
+                self.fileSizes[self.lastFile][1]=os.path.getmtime(self.lastFile)
+                self.fileSizes[self.lastFile][2]=os.path.getsize(self.lastFile)
+                print(self.fileSizes[self.lastFile])
+            return
         now = (datetime.datetime.now()).strftime("%Y-%m-%d %H:%M:%S")
         if(self.lastFile!=None):
-            self.fileSizes[self.lastFile][1]=datetime.datetime.now()
-            self.fileSizes[self.lastFile][2]=os.path.getsize(self.lastFile)
+            self.fileSizes[self.lastFile][1]=os.path.getmtime(self.lastFile) if os.path.exists(self.lastFile) else -1
+            self.fileSizes[self.lastFile][2]=os.path.getsize(self.lastFile) if os.path.exists(self.lastFile) else -1
             print(self.fileSizes[self.lastFile])
-        self.lastFile = event.src_path
-        self.fileSizes[self.lastFile] = [datetime.datetime.now(),0,0,0]
         path = event.src_path
+        self.lastFile = path
+        self.fileSizes[path] = [os.stat(path).st_ctime,0,0,0]
+        
         msg = f"{now} -- {event.event_type} -- File: {path}"
         print_with_color(msg, color=event2color[event.event_type])
 
+    
+
     def on_moved(self, event):
         pass
+    
+    def write_json(self):
+        self.is_stopped = True
+        dirOfDirs = {}
+        for key in self.fileSizes:
+            print(f"Key: {key}")
+            # get the directory of the file
+            directory = os.path.dirname(key)
+            if directory not in dirOfDirs:
+                dirOfDirs[directory] = {}
+            dirOfDirs[directory][key] = {"creation_time": self.fileSizes[key][0], "last_modified": self.fileSizes[key][1], "size": self.fileSizes[key][2], "deleted": self.fileSizes[key][3]}
+        # write the dictionary to a json file in the directory that is key of the dirOfDirs
+        print(dirOfDirs)
+        for key in dirOfDirs:
+            with open(f"{key}/fileSizes.json", "w") as file:
+                json.dump(dirOfDirs[key], file, indent=4)
+
+        
