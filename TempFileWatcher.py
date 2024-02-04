@@ -16,10 +16,11 @@ class TempFileWatcher:
     fileSizes = {}
 
     # The observer is the class that watches for any file system change and then dispatches the event to the event handler.
-    def __init__(self, watchDirectory, totrack, watchDelay, watchRecursively, doWatchDirectories):
+    def __init__(self, watchDirectory, totrack, result_dir, watchDelay, watchRecursively, doWatchDirectories):
         # Initialize variables in relation
         self.watchDirectory = watchDirectory
         self.totrack = totrack
+        self.result_dir = result_dir
         self.watchDelay = watchDelay
         self.watchRecursively = watchRecursively
         self.doWatchDirectories = doWatchDirectories
@@ -56,7 +57,7 @@ class TempFileWatcher:
         print("Observer is running:", self.observer.name)
         self.start()
         try:
-            self.totrack()
+            self.totrack(self.result_dir)
             self.stop()
         except Exception as error:
             print(error)

@@ -2,7 +2,7 @@
 ################################
 
 # Directory To Watch, If not specified, the following value will be considered explicitly.
-WATCH_DIRECTORY = "../"
+WATCH_DIRECTORY = "../sorted"
 
 # Delay Between Watch Cycles In Seconds
 WATCH_DELAY = 0.1
@@ -13,3 +13,5 @@ WATCH_RECURSIVELY = True
 # whether to watch for directory events
 DO_WATCH_DIRECTORIES = True
 
+
+TEST_RESULT_DIR = "../results"
