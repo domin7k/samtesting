@@ -10,6 +10,8 @@ def make_unambigous():
     lines = []
     with open(filename, 'r') as file:
         for line in file:
+            if line.strip() == '':
+                continue
             line = line.strip()
             out_line = line
             if '-o' in line:

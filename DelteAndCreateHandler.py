@@ -76,14 +76,12 @@ class DelteAndCreateHandler(FileSystemEventHandler):
         self.is_stopped = True
         dirOfDirs = {}
         for key in self.fileSizes:
-            print(f"Key: {key}")
             # get the directory of the file
             directory = os.path.dirname(key)
             if directory not in dirOfDirs:
                 dirOfDirs[directory] = {}
             dirOfDirs[directory][key] = {"creation_time": self.fileSizes[key][0], "last_modified": self.fileSizes[key][1], "size": self.fileSizes[key][2], "deleted": self.fileSizes[key][3]}
         # write the dictionary to a json file in the directory that is key of the dirOfDirs
-        print(dirOfDirs)
         for key in dirOfDirs:
             with open(f"{key}/fileSizes.json", "w") as file:
                 json.dump(dirOfDirs[key], file, indent=4)

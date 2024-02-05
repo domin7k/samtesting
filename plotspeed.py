@@ -19,8 +19,11 @@ print(df.keys())
 
 
 def extractParam(param_string):
+    if type(param_string) is not str:
+        return "No Param"
     return param_string.strip().split("-@")[1].strip().split(" ")[0]
 
+print(df['params'])
 
 df[PARAM] = df['params'].apply(extractParam)
 # print the mem column
