@@ -47,7 +47,7 @@ def runSam(result_dir: str):
                 start_time = time.time()
                 start_resources = resource.getrusage(resource.RUSAGE_CHILDREN)
 
-                result = subprocess.run(["../samtools/samtools"] + params, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+                result = subprocess.run(["../samtools/samtools"] + params, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 
                 end_resources = resource.getrusage(resource.RUSAGE_CHILDREN)
                 end_time = time.time()
