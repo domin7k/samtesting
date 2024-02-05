@@ -30,8 +30,11 @@ def runSam(result_dir: str):
         with open(f"{result_dir}/comment.txt", "w") as file:
             file.write(comment)
 
+    samtoolsVersion = subprocess.check_output(["../samtools./git", "rev-parse", "HEAD"]).decode("ascii").strip()
+    print(f"Samtools version: {samtoolsVersion}")
+
     with open(f"{result_dir}/results.csv", "w") as csvFile:
-        csvFile.write("Params, user time, system time, memory usage, execution time\n")
+        csvFile.write("params,user_time,system_time,memory_usage,execution_time\n")
         with open("./samparams") as file:
             lines = [line.rstrip() for line in file]
         for line in lines:
@@ -54,7 +57,7 @@ def runSam(result_dir: str):
             print(f"Execution time: {execution_time} seconds")
             print(f"User time: {user_time} seconds")
             print(f"Memory usage: {memory_usage} kilobytes")
-            csvFile.write(f"{line}, {user_time}, {system_time}, {memory_usage}, {execution_time}\n")
+            csvFile.write(f"{line},{user_time},{system_time},{memory_usage},{execution_time}\n")
             print(result.stderr)
             print(result.stdout)
     #     drive_usage = 0
