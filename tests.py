@@ -62,8 +62,8 @@ def runSam(result_dir: str):
                 print(f"User time: {user_time} seconds")
                 print(f"Memory usage: {memory_usage} kilobytes")
                 csvFile.write(f"{line},{user_time},{system_time},{memory_usage},{execution_time}\n")
-                print(result.stderr)
-                print(result.stdout)
+                print(result.stderr.decode("ascii"))
+                print(result.stdout.decode("ascii"))
             #     drive_usage = 0
             #     sliding_usage: list = []
             #     max_usage = 0
@@ -115,3 +115,28 @@ if __name__ == "__main__":
         doWatchDirectories=config.DO_WATCH_DIRECTORIES,
     )
     log_watcher.run()
+
+    #collect filesizes in a json file
+    
+    temFiles = {}
+    with open("samparams", 'r') as file:
+        for line in file:
+            if line.strip() == '':
+                continue
+            line = line.strip()
+            out_line = line
+            if '-o' in line:
+                output_dir = os.path.dirname(line.split('-o')[1].strip().split(' ')[0])
+                if (os.path.exists(output_dir + "/fileSizes.json")):
+                    with open(output_dir + "/fileSizes.json", 'r') as file:
+                        singleRunTemps =  json.load(file)
+                        for key in singleRunTemps:
+                            onlyFileName = os.path.basename(key)
+                            if onlyFileName in temFiles:
+                                temFiles[onlyFileName][line] = singleRunTemps[key]
+                            else:
+                                temFiles[onlyFileName] = {line: singleRunTemps[key]}
+    with open(result_dir + "/fileSizes.json", 'w') as file:
+        json.dump(temFiles, file, indent=4)
+
+                    

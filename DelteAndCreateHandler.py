@@ -50,10 +50,6 @@ class DelteAndCreateHandler(FileSystemEventHandler):
 
     def on_created(self, event):
         if self.is_stopped:
-            if(self.lastFile!=None and self.fileSizes[self.lastFile][1]== 0):
-                self.fileSizes[self.lastFile][1]=os.path.getmtime(self.lastFile)
-                self.fileSizes[self.lastFile][2]=os.path.getsize(self.lastFile)
-                print(self.fileSizes[self.lastFile])
             return
         now = (datetime.datetime.now()).strftime("%Y-%m-%d %H:%M:%S")
         if(self.lastFile!=None):
@@ -74,6 +70,10 @@ class DelteAndCreateHandler(FileSystemEventHandler):
     
     def write_json(self):
         self.is_stopped = True
+        if(self.lastFile!=None and self.fileSizes[self.lastFile][1]== 0):
+                self.fileSizes[self.lastFile][1]=os.path.getmtime(self.lastFile)
+                self.fileSizes[self.lastFile][2]=os.path.getsize(self.lastFile)
+                print(self.fileSizes[self.lastFile])
         dirOfDirs = {}
         for key in self.fileSizes:
             # get the directory of the file
