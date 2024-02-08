@@ -20,11 +20,12 @@ def is_dir_path(path):
         raise NotADirectoryError(path)
 
 
+
 def runSam(result_dir: str):
     try:
         # open a cvs file in the result directory and write the header
         # make a copy of the samparams file
-        shutil.copyfile("samparams", f"{result_dir}/samparams")
+        shutil.copyfile(config.TEMP_SAMPARAMS, f"{result_dir}/samparams")
         # ask the user for information about the experiment and store the input in a file named comment.txt
         # if the imput is empty, the file will not be created
         comment = input("Please enter a comment for the experiment: ")
@@ -39,7 +40,7 @@ def runSam(result_dir: str):
 
         with open(f"{result_dir}/results.csv", "w") as csvFile:
             csvFile.write("params,user_time,system_time,memory_usage,execution_time\n")
-            with open("./samparams") as file:
+            with open(config.TEMP_SAMPARAMS) as file:
                 lines = [line.rstrip() for line in file]
             for line in lines:
                 params = shlex.split(line)

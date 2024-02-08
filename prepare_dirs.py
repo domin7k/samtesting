@@ -1,6 +1,6 @@
 import os
 import shutil
-
+import config 
 filename = 'samparams'
 
 def make_unambigous():
@@ -32,7 +32,7 @@ def make_unambigous():
                 print(f"Changed line: {line} to {out_line}")
             lines.append(out_line)
 
-    with open(filename, 'w') as file:
+    with open(config.TEMP_SAMPARAMS, 'w') as file:
         for line in lines:
             file.write(line + '\n')
                 

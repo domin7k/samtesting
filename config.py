@@ -5,7 +5,9 @@
 WATCH_DIRECTORY = "../sorted"
 
 # Delay Between Watch Cycles In Seconds
-WATCH_DELAY = 0.1
+WATCH_DELAY = 0.5
+
+TEMP_SAMPARAMS = "../samparams.tmp.txt"
 
 # Check The WATCH_DIRECTORY and its children
 WATCH_RECURSIVELY = True
