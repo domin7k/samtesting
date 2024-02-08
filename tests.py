@@ -120,7 +120,7 @@ if __name__ == "__main__":
     #collect filesizes in a json file
     
     temFiles = {}
-    with open("samparams", 'r') as file:
+    with open(config.TEMP_SAMPARAMS, 'r') as file:
         for line in file:
             if line.strip() == '':
                 continue
