@@ -39,7 +39,9 @@ class DelteAndCreateHandler(FileSystemEventHandler):
         pass
 
     def on_modified(self, event):
-        pass
+        if event.src_path == self.lastFile:
+            print_with_color(f"File {event.src_path} was modified after creation of another file", color=Fore.CYAN)
+            print(self.fileSizes[self.lastFile])
 
     def on_deleted(self, event):
         now = (datetime.datetime.now()).strftime("%Y-%m-%d %H:%M:%S")
