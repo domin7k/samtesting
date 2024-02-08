@@ -71,6 +71,7 @@ class DelteAndCreateHandler(FileSystemEventHandler):
         pass
     
     def write_json(self):
+        return
         self.is_stopped = True
         if(self.lastFile!=None and self.fileSizes[self.lastFile][1]== 0):
                 self.fileSizes[self.lastFile][1]=os.path.getmtime(self.lastFile)
