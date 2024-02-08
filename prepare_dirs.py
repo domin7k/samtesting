@@ -37,7 +37,7 @@ def make_unambigous():
             file.write(line + '\n')
                 
 
-with open(filename, 'r') as file:
+with open(config.TEMP_SAMPARAMS, 'r') as file:
     make_unambigous()
     for line in file:
         line = line.strip()
