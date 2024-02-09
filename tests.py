@@ -8,10 +8,13 @@ import shlex
 import shutil
 import subprocess
 import time
+
+import pandas as pd
 from TempFileWatcher import TempFileWatcher
 import config
 from helpers.formating import HumanBytes
-#from plotfiles import human_format
+
+# from plotfiles import human_format
 
 
 def is_dir_path(path):
@@ -21,6 +24,37 @@ def is_dir_path(path):
     else:
         raise NotADirectoryError(path)
 
+
+def getVersions():
+    return {
+        "samtoolsVersion": subprocess.check_output(
+            ["git", "--git-dir", "../samtools/.git", "rev-parse", "HEAD"]
+        )
+        .decode("ascii")
+        .strip(),
+        "htslibVersion": subprocess.check_output(
+            ["git", "--git-dir", "../htslib/.git", "rev-parse", "HEAD"]
+        )
+        .decode("ascii")
+        .strip(),
+        "samtoolsBranch": subprocess.check_output(
+            [
+                "git",
+                "--git-dir",
+                "../samtools/.git",
+                "rev-parse",
+                "--abbrev-ref",
+                "HEAD",
+            ]
+        )
+        .decode("ascii")
+        .strip(),
+        "htslibBranch": subprocess.check_output(
+            ["git", "--git-dir", "../htslib/.git", "rev-parse", "--abbrev-ref", "HEAD"]
+        )
+        .decode("ascii")
+        .strip(),
+    }
 
 
 def runSam(result_dir: str):
@@ -35,22 +69,44 @@ def runSam(result_dir: str):
             with open(f"{result_dir}/comment.txt", "w") as file:
                 file.write(comment)
 
-        versions = {"samtoolsVersion" : subprocess.check_output(["git", "--git-dir", "../samtools/.git", "rev-parse", "HEAD"]).decode("ascii").strip(),
-                    "htslibVersion" : subprocess.check_output(["git", "--git-dir", "../htslib/.git", "rev-parse", "HEAD"]).decode("ascii").strip(),
-                    }
-        json.dump(versions, open(f"{result_dir}/versions.json", "w"))
+        versions = getVersions()
+        json.dump(versions, open(f"{result_dir}/versionsStart.json", "w"))
 
         with open(f"{result_dir}/results.csv", "w") as csvFile:
-            csvFile.write("params,user_time,system_time,execution_time\n")
-            with open(config.TEMP_SAMPARAMS) as file:
+            csvFile.write("branch,params,user_time,system_time,execution_time\n")
+            with open(config.TEMP_SAMPARAMS, "r") as file:
                 lines = [line.rstrip() for line in file]
+            versionCounter = 0
             for line in lines:
+                if line.strip().startswith("git"):
+                    if "checkout" in line:
+                        if versions["samtoolsBranch"] in line:
+                            print("Samtools branch already checked out")
+                            continue
+                    subprocess.run(line.split(" "))
+                    # run make clean and make in the git directory
+                    git_dir = os.path.dirname(
+                        line.split("--git-dir")[1].strip().split(" ")[0].strip()
+                    )
+                    # subprocess.run([f"(cd {git_dir}/ && make clean)"], shell=True)
+                    subprocess.run([f"(cd {git_dir}/ && make)"], shell=True)
+                    versions = getVersions()
+                    versionCounter += 1
+                    json.dump(
+                        versions,
+                        open(f"{result_dir}/versions{versionCounter}.json", "w"),
+                    )
+                    continue
                 params = shlex.split(line)
                 print(f"Params: {params}")
                 start_time = time.time()
                 start_resources = resource.getrusage(resource.RUSAGE_CHILDREN)
 
-                result = subprocess.run(["../samtools/samtools"] + params, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+                result = subprocess.run(
+                    ["../samtools/samtools"] + params,
+                    stdout=subprocess.PIPE,
+                    stderr=subprocess.PIPE,
+                )
 
                 end_resources = resource.getrusage(resource.RUSAGE_CHILDREN)
                 end_time = time.time()
@@ -61,7 +117,9 @@ def runSam(result_dir: str):
 
                 print(f"Execution time: {execution_time} seconds")
                 print(f"User time: {user_time} seconds")
-                csvFile.write(f"{line},{user_time},{system_time},{execution_time}\n")
+                csvFile.write(
+                    f"{versions['samtoolsBranch']},{line},{user_time},{system_time},{execution_time}\n"
+                )
                 print(result.stderr.decode("ascii"))
                 print(result.stdout.decode("ascii"))
 
@@ -74,9 +132,6 @@ def runSam(result_dir: str):
             shutil.rmtree(result_dir)
         else:
             print("The result directory was not deleted")
-
-    
-
 
 
 if __name__ == "__main__":
@@ -93,53 +148,68 @@ if __name__ == "__main__":
     )
     log_watcher.run()
 
-    #collect filesizes in a json file
-    
+    # collect filesizes in a json file
+    branches = []
+    # get the branches from the branch column of the csv file using pandas
+    df = pd.read_csv(result_dir + "/results.csv")
+    branches = df["branch"].tolist()
+    print(f"branches: {branches}")
     temFiles = {}
-    with open(config.TEMP_SAMPARAMS, 'r') as file:
+    with open(config.TEMP_SAMPARAMS, "r") as file:
         for line in file:
-            if line.strip() == '':
+            if line.strip() == "" or line.strip().startswith("git"):
                 continue
+
             line = line.strip()
-            out_line = line
-            if '-o' in line:
-                output_dir = os.path.dirname(line.split('-o')[1].strip().split(' ')[0])
-                if (os.path.exists(output_dir + "/fileSizes.json")):
-                    with open(output_dir + "/fileSizes.json", 'r') as file:
-                        singleRunTemps =  json.load(file)
+            if "-o" in line:
+                branch = branches.pop(0)
+                output_dir = os.path.dirname(line.split("-o")[1].strip().split(" ")[0])
+                if os.path.exists(output_dir + "/fileSizes.json"):
+                    with open(output_dir + "/fileSizes.json", "r") as file:
+                        singleRunTemps = json.load(file)
                         # add to summary
                         for key in singleRunTemps:
                             onlyFileName = os.path.basename(key)
                             if onlyFileName in temFiles:
-                                temFiles[onlyFileName][line] = singleRunTemps[key]
+                                temFiles[onlyFileName][branch + line] = singleRunTemps[
+                                    key
+                                ]
                             else:
-                                temFiles[onlyFileName] = {line: singleRunTemps[key]}
+                                temFiles[onlyFileName] = {
+                                    branch + line: singleRunTemps[key]
+                                }
 
                         # calculate statistics
                         drive_usage = 0
                         sliding_usage: list = []
                         max_usage = 0
-                        for name, data in sorted(singleRunTemps.items(), key=lambda x : x[0]):
+                        for name, data in sorted(
+                            singleRunTemps.items(), key=lambda x: x[0]
+                        ):
                             print(data)
                             start_time = data["creation_time"]
                             end_time = data["last_modified"]
                             file_size = data["size"]
                             deleted = data["deleted"]
                             drive_usage += file_size
-                            sliding_usage = [value for value in sliding_usage if value["deleted"] == 0 or value["deleted"] > start_time]
+                            sliding_usage = [
+                                value
+                                for value in sliding_usage
+                                if value["deleted"] == 0
+                                or value["deleted"] > start_time
+                            ]
                             sliding_usage.append(data)
                             current_usage = 0
                             for i in sliding_usage:
                                 current_usage += i["size"]
-                            if (current_usage>max_usage):
+                            if current_usage > max_usage:
                                 max_usage = current_usage
                     print(f"command: {line}")
-                    print(f"Maximal concurrent drive usage: {HumanBytes.format(max_usage)}") 
+                    print(
+                        f"Maximal concurrent drive usage: {HumanBytes.format(max_usage)}"
+                    )
                     print(f"Total bytes written: {HumanBytes.format(drive_usage)}")
                     print("---------------------------------")
 
-
-    with open(result_dir + "/fileSizes.json", 'w') as file:
+    with open(result_dir + "/fileSizes.json", "w") as file:
         json.dump(temFiles, file, indent=4)
-
-                    
