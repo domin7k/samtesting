@@ -8,6 +8,7 @@ import shlex
 import shutil
 import subprocess
 import time
+import traceback
 
 import pandas as pd
 from TempFileWatcher import TempFileWatcher
@@ -124,14 +125,14 @@ def runSam(result_dir: str):
                 print(result.stdout.decode("ascii"))
 
     except Exception as e:
-        print(e)
-        print("An error occurred")
+        print(traceback.format_exc())
         # ask the user if he wants to delete the result directory
         delete = input("Do you want to delete the result directory? (y/n)")
         if delete == "y":
             shutil.rmtree(result_dir)
         else:
             print("The result directory was not deleted")
+        exit(1)
 
 
 if __name__ == "__main__":
