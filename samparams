@@ -1,2 +1,2 @@
-sort -@ 4 -l 0 -m 30M -o ../sorted/outputOfTest/sorted.bam ../unsorted_bam_files/onepercent.bam
-sort -@ 4 -l 1 -m 30M -o ../sorted/outputOfTest/sorted.bam ../unsorted_bam_files/onepercent.bam
+sort -@ 4 -l 0 -m 300M -o ../sorted/outputOfTest/sorted.bam ../unsorted_bam_files/onepercent.bam
+sort -@ 4 -l 9 -m 300M -o ../sorted/outputOfTest/sorted.bam ../unsorted_bam_files/onepercent.bam
