@@ -14,7 +14,7 @@ def make_unambigous():
         for line in file:
             if line.strip() == "":
                 continue
-            if line.strip().startswith("git"):
+            if line.strip().startswith("("):
                 lines.append(line.strip())
                 continue
             line = line.strip()

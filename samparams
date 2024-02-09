@@ -1,4 +1,4 @@
-git --git-dir ../samtools/.git checkout develop
+(cd ../samtools/ && git checkout develop)
 sort -@ 4 -l 0 -m 300M -o ../sorted/outputOfTest/sorted.bam ../unsorted_bam_files/onepercent.bam
-git --git-dir ../samtools/.git checkout temporary-sam
+(cd ../samtools/ && git checkout develop)
 sort -@ 4 -l 0 -m 300M -o ../sorted/outputOfTest/sorted.bam ../unsorted_bam_files/onepercent.bam

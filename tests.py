@@ -78,12 +78,12 @@ def runSam(result_dir: str):
                 lines = [line.rstrip() for line in file]
             versionCounter = 0
             for line in lines:
-                if line.strip().startswith("git"):
+                if line.strip().startswith("("):
                     if "checkout" in line:
                         if versions["samtoolsBranch"] in line:
                             print("Samtools branch already checked out")
                             continue
-                    subprocess.run(line.split(" "))
+                    subprocess.run(line, shell=True)
                     # run make clean and make in the git directory
                     git_dir = os.path.dirname(
                         line.split("--git-dir")[1].strip().split(" ")[0].strip()
@@ -157,7 +157,7 @@ if __name__ == "__main__":
     temFiles = {}
     with open(config.TEMP_SAMPARAMS, "r") as file:
         for line in file:
-            if line.strip() == "" or line.strip().startswith("git"):
+            if line.strip() == "" or line.strip().startswith("("):
                 continue
 
             line = line.strip()
@@ -171,12 +171,12 @@ if __name__ == "__main__":
                         for key in singleRunTemps:
                             onlyFileName = os.path.basename(key)
                             if onlyFileName in temFiles:
-                                temFiles[onlyFileName][branch + line] = singleRunTemps[
-                                    key
-                                ]
+                                temFiles[onlyFileName][branch + ": " + line] = (
+                                    singleRunTemps[key]
+                                )
                             else:
                                 temFiles[onlyFileName] = {
-                                    branch + line: singleRunTemps[key]
+                                    branch + ": " + line: singleRunTemps[key]
                                 }
 
                         # calculate statistics
