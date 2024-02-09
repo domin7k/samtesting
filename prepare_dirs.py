@@ -35,10 +35,10 @@ def make_unambigous():
     with open(config.TEMP_SAMPARAMS, 'w') as file:
         for line in lines:
             file.write(line + '\n')
-                
 
+           
+make_unambigous()
 with open(config.TEMP_SAMPARAMS, 'r') as file:
-    make_unambigous()
     for line in file:
         line = line.strip()
         if '-o' in line:

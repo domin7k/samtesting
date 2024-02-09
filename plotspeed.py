@@ -5,12 +5,10 @@ import pandas as pd
 import matplotlib.pyplot as plt
 from matplotlib import ticker
 
+
 PARAM = "-@"
 
-def extractParam(param_string):
-    if type(param_string) is not str:
-        return "No Param"
-    return param_string.strip().split("-@")[1].strip().split(" ")[0]
+
 
 # ArgumentParser erstellen und Argument hinzufügen
 parser = argparse.ArgumentParser(description='Plot.')
@@ -19,40 +17,46 @@ parser.add_argument("-d1",dest='desciption1', type=str, help='The description of
 parser.add_argument("-d2",dest='desciption2', type=str, help='The description of the second csv file.', default=None, nargs='?')
 # optionales zweites argument für zweites input csv
 parser.add_argument('-f', dest="filename2",type=str, help='The filename to get the csv data from.', default=None, nargs='?')
+parser.add_argument('-p', dest="param",type=str, help='the param to plot against', default=PARAM, nargs='?')
 
 
 args = parser.parse_args()
 
+param = args.param
 
+def extractParam(param_string):
+    if type(param_string) is not str:
+        return "No Param"
+    return param_string.strip().split(param)[1].strip().split(" ")[0]
 
 # Read the CSV file
 df = pd.read_csv(args.filename)
 
 if args.filename2:
     df2 = pd.read_csv(args.filename2)
-    df2[PARAM] = df2['params'].apply(extractParam)
-    df2 = df2.sort_values(by=[PARAM])
+    df2[param] = df2['params'].apply(extractParam)
+    df2 = df2.sort_values(by=[param])
 
 print(df['params'])
 
-df[PARAM] = df['params'].apply(extractParam)
+df[param] = df['params'].apply(extractParam)
 
-df = df.sort_values(by=[PARAM])
+df = df.sort_values(by=[param])
 # print the mem column
-print(df[PARAM])
+print(df[param])
 
 # Plot the execution time against the 'mem' column
 
-plt.plot(df[PARAM].to_numpy(), df['execution_time'].to_numpy())
+plt.plot(df[param].to_numpy(), df['execution_time'].to_numpy())
 if args.filename2:
-    plt.plot(df2[PARAM].to_numpy(), df2['execution_time'].to_numpy())
+    plt.plot(df2[param].to_numpy(), df2['execution_time'].to_numpy())
 # Add labels and title
-plt.xlabel(PARAM)
+plt.xlabel(param)
 plt.ylabel('Execution Time')
-plt.title(f'Execution Time vs {PARAM}')
+plt.title(f'Execution Time vs {param}')
 
 # Set xticks
-plt.xticks(df[PARAM])
+plt.xticks(df[param])
 
 if args.desciption1 and args.desciption2:
     plt.legend([args.desciption1, args.desciption2])

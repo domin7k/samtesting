@@ -10,6 +10,8 @@ import subprocess
 import time
 from TempFileWatcher import TempFileWatcher
 import config
+from helpers.formating import HumanBytes
+#from plotfiles import human_format
 
 
 def is_dir_path(path):
@@ -39,7 +41,7 @@ def runSam(result_dir: str):
         json.dump(versions, open(f"{result_dir}/versions.json", "w"))
 
         with open(f"{result_dir}/results.csv", "w") as csvFile:
-            csvFile.write("params,user_time,system_time,memory_usage,execution_time\n")
+            csvFile.write("params,user_time,system_time,execution_time\n")
             with open(config.TEMP_SAMPARAMS) as file:
                 lines = [line.rstrip() for line in file]
             for line in lines:
@@ -56,39 +58,13 @@ def runSam(result_dir: str):
                 execution_time = end_time - start_time
                 user_time = end_resources.ru_utime - start_resources.ru_utime
                 system_time = end_resources.ru_stime - start_resources.ru_stime
-                # the same for all resources
-                memory_usage = end_resources.ru_maxrss
 
                 print(f"Execution time: {execution_time} seconds")
                 print(f"User time: {user_time} seconds")
-                print(f"Memory usage: {memory_usage} kilobytes")
-                csvFile.write(f"{line},{user_time},{system_time},{memory_usage},{execution_time}\n")
+                csvFile.write(f"{line},{user_time},{system_time},{execution_time}\n")
                 print(result.stderr.decode("ascii"))
                 print(result.stdout.decode("ascii"))
-            #     drive_usage = 0
-            #     sliding_usage: list = []
-            #     max_usage = 0
-            #     for name, data in sorted(self.fileSizes.items(), key=lambda x : x[0]):
-            #         start_time = data[0]
-            #         end_time = data[1]
-            #         duration = end_time - start_time
-            #         file_size = data[2]
-            #         deleted = data[3]
-            #         drive_usage += file_size
-            #         sliding_usage = [value for value in sliding_usage if value[3] == 0 or value[3] > start_time]
-            #         sliding_usage.append(data)
-            #         current_usage = 0
-            #         for i in sliding_usage:
-            #             current_usage += i[2]
-            #         if (current_usage>max_usage):
-            #             max_usage = current_usage
-            #         print(f"Name: {name}")
-            #         print(f"Active Time: {duration}")
-            #         print(f"final size: {file_size} Bytes")
-            #         print(f"deleted at {deleted}")
-            #         print("------------------------")
-            # print(f"Maximal concurrent drive usage: {max_usage}")
-            # print(f"Total bytes written: {drive_usage}")
+
     except Exception as e:
         print(e)
         print("An error occurred")
@@ -131,12 +107,38 @@ if __name__ == "__main__":
                 if (os.path.exists(output_dir + "/fileSizes.json")):
                     with open(output_dir + "/fileSizes.json", 'r') as file:
                         singleRunTemps =  json.load(file)
+                        # add to summary
                         for key in singleRunTemps:
                             onlyFileName = os.path.basename(key)
                             if onlyFileName in temFiles:
                                 temFiles[onlyFileName][line] = singleRunTemps[key]
                             else:
                                 temFiles[onlyFileName] = {line: singleRunTemps[key]}
+
+                        # calculate statistics
+                        drive_usage = 0
+                        sliding_usage: list = []
+                        max_usage = 0
+                        for name, data in sorted(singleRunTemps.items(), key=lambda x : x[0]):
+                            print(data)
+                            start_time = data["creation_time"]
+                            end_time = data["last_modified"]
+                            file_size = data["size"]
+                            deleted = data["deleted"]
+                            drive_usage += file_size
+                            sliding_usage = [value for value in sliding_usage if value["deleted"] == 0 or value["deleted"] > start_time]
+                            sliding_usage.append(data)
+                            current_usage = 0
+                            for i in sliding_usage:
+                                current_usage += i["size"]
+                            if (current_usage>max_usage):
+                                max_usage = current_usage
+                    print(f"command: {line}")
+                    print(f"Maximal concurrent drive usage: {HumanBytes.format(max_usage)}") 
+                    print(f"Total bytes written: {HumanBytes.format(drive_usage)}")
+                    print("---------------------------------")
+
+
     with open(result_dir + "/fileSizes.json", 'w') as file:
         json.dump(temFiles, file, indent=4)
 
