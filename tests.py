@@ -87,7 +87,7 @@ def runSam(result_dir: str):
                     subprocess.run(line, shell=True)
                     # run make clean and make in the git directory
                     git_dir = os.path.dirname(
-                        line.split("--git-dir")[1].strip().split(" ")[0].strip()
+                        line.split("cd")[1].strip().split(" ")[0].strip()
                     )
                     # subprocess.run([f"(cd {git_dir}/ && make clean)"], shell=True)
                     subprocess.run([f"(cd {git_dir}/ && make)"], shell=True)
