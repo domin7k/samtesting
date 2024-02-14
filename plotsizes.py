@@ -41,13 +41,7 @@ print(legendLabels)
 
 all_ticks = []
 all_xs = np.zeros(2 * 2)
-all_color = []
-all_size = []
-max_time_span = 0
-legendColors = []
-ticks = []
-ticks_idx = []
-sizes_human_readable = []
+
 all_lines = []
 for i, process in enumerate(lines):
     process_tmp = [line for line in process if "tmp" in line[4]]
@@ -72,6 +66,8 @@ print(
     )
 )
 process_with_tmp = 0
+
+patches = []
 for i in range(max_tmp):
 
     label = all_lines[process_with_tmp][0][i][4]
@@ -88,13 +84,45 @@ for i in range(max_tmp):
         for x in y
     ]
 
-    plt.bar(
-        all_ticks,
-        sorted_sizes,
-        label=all_lines[0][0][i][4],
-        bottom=all_xs,
+    patches.extend(
+        plt.bar(
+            all_ticks,
+            sorted_sizes,
+            label=all_lines[0][0][i][4],
+            bottom=all_xs,
+            width=0.5,
+        ).patches
     )
     all_xs += sorted_sizes
+
+for bar in patches:
+    plt.text(
+        # Put the text in the middle of each bar. get_x returns the start
+        # so we add half the width to get to the middle.
+        bar.get_x() + bar.get_width() / 2,
+        # Vertically, add the height of the bar to the start of the bar,
+        # along with the offset.
+        bar.get_height() / 2 + bar.get_y(),
+        # This is actual value we'll show.
+        HumanBytes.format(bar.get_height()) if bar.get_height() > 0 else "",
+        # Center the labels and style them a bit.
+        ha="center",
+        va="center",
+        color="w",
+        size=8,
+    )
+
+for i in range(len(all_ticks)):
+    plt.text(
+        i,
+        all_xs[i] + max(all_xs) * 0.005,
+        HumanBytes.format(all_xs[i]) if all_xs[i] > 0 else "",
+        ha="center",
+        va="bottom",
+        weight="bold",
+        color="k",
+        size=8,
+    )
 
 
 # Add legend to the plot
