@@ -1,3 +1,3 @@
 (cd ../samtools/ && git checkout develop)
 sort -@ 4 -m 300M -o ../sorted/outputOfTest/sorted.bam ../unsorted_bam_files/onepercent.bam
-view -@ 4 -h -o ../sorted/outputOfTest/sorted.sam ../unsorted_bam_files/onepercent.bam
+view -@ 4 -h -o ../sorted/outputOfTest/sorted.bam ../unsorted_bam_files/onepercent.bam
