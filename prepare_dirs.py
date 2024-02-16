@@ -2,15 +2,13 @@ import os
 import shutil
 import config
 
-filename = "samparams"
-
 
 def make_unambigous():
     # checks the dirs in the -o parameter and makes them unambigous
     # list of previous directories
     prev_dirs = []
     lines = []
-    with open(filename, "r") as file:
+    with open("samparams", "r") as file:
         for line in file:
             if line.strip() == "":
                 continue
@@ -47,22 +45,28 @@ def make_unambigous():
             file.write(line + "\n")
 
 
-make_unambigous()
-with open(config.TEMP_SAMPARAMS, "r") as file:
-    for line in file:
-        line = line.strip()
-        if "-o" in line:
-            output_dir = os.path.dirname(line.split("-o")[1].strip().split(" ")[0])
-            if os.path.exists(output_dir):
-                choice = input(
-                    f"The directory '{output_dir}' already exists. Do you want to delete it? (y/n): "
-                )
-                if choice.lower() == "y":
-                    shutil.rmtree(output_dir)
-                    print(f"Deleted directory: {output_dir}")
-                    os.makedirs(output_dir)
+def delete_old_dirs(ask=True):
+    make_unambigous()
+    with open(config.TEMP_SAMPARAMS, "r") as file:
+        for line in file:
+            line = line.strip()
+            if "-o" in line:
+                output_dir = os.path.dirname(line.split("-o")[1].strip().split(" ")[0])
+                if os.path.exists(output_dir):
+                    if ask:
+                        choice = input(
+                            f"The directory '{output_dir}' already exists. Do you want to delete it? (y/n): "
+                        )
+                    if not ask or choice.lower() == "y":
+                        shutil.rmtree(output_dir)
+                        print(f"Deleted directory: {output_dir}")
+                        os.makedirs(output_dir)
+                    else:
+                        print(f"Skipping directory: {output_dir}")
                 else:
-                    print(f"Skipping directory: {output_dir}")
-            else:
-                os.makedirs(output_dir)
-            print(f"Created directory: {output_dir}")
+                    os.makedirs(output_dir)
+                print(f"Created directory: {output_dir}")
+
+
+if __name__ == "__main__":
+    delete_old_dirs()
