@@ -1,6 +1,6 @@
-sort -@ 4 -m 100M -l 0 -o ../sorted/outputOfTest/sorted.bam ../unsorted_bam_files/onepercent.bam
-sort -@ 4 -m 100M -l 1 -o ../sorted/outputOfTest/sorted.bam ../unsorted_bam_files/onepercent.bam
-sort -@ 4 -m 100M -l 3 -o ../sorted/outputOfTest/sorted.bam ../unsorted_bam_files/onepercent.bam
-sort -@ 4 -m 100M -l 6 -o ../sorted/outputOfTest/sorted.bam ../unsorted_bam_files/onepercent.bam
-sort -@ 4 -m 100M -l 9 -o ../sorted/outputOfTest/sorted.bam ../unsorted_bam_files/onepercent.bam
+sort -@ 4 -m 1000M -l 0 -o ../sorted/outputOfTest/sorted.bam ../unsorted_bam_files/onepercent.bam
+sort -@ 4 -m 1000M -l 1 -o ../sorted/outputOfTest/sorted.bam ../unsorted_bam_files/onepercent.bam
+sort -@ 4 -m 1000M -l 3 -o ../sorted/outputOfTest/sorted.bam ../unsorted_bam_files/onepercent.bam
+sort -@ 4 -m 1000M -l 6 -o ../sorted/outputOfTest/sorted.bam ../unsorted_bam_files/onepercent.bam
+sort -@ 4 -m 1000M -l 9 -o ../sorted/outputOfTest/sorted.bam ../unsorted_bam_files/onepercent.bam
 
