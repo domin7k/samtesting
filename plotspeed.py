@@ -62,22 +62,52 @@ def extractParam(param_string):
 df = pd.read_csv(args.filename)
 
 avg = df.groupby(["params", "branch"], as_index=False)["execution_time"].mean()
+
+
+df_min = df.groupby(["params", "branch"], as_index=False)["execution_time"].min()
+df_max = df.groupby(["params", "branch"], as_index=False)["execution_time"].max()
 print(avg)
 
 avg[param] = avg["params"].apply(extractParam)
+df_max[param] = df_max["params"].apply(extractParam)
+df_min[param] = df_min["params"].apply(extractParam)
 
 avg = avg.sort_values(by=[param])
+df_max = df_max.sort_values(by=[param])
+df_min = df_min.sort_values(by=[param])
+
 # print the mem column
 print(avg[param])
 
 # Plot the execution time against the 'mem' column
-
+plt.fill_between(
+    x=range(len(avg["execution_time"])),
+    y1=df_min["execution_time"].to_numpy(),
+    y2=df_max["execution_time"].to_numpy(),
+    alpha=0.20,
+)
 plt.plot(
     range(len(avg["execution_time"])),
     avg["execution_time"].to_numpy(),
     marker="o",
     fillstyle="none",
 )
+plt.plot(
+    range(len(avg["execution_time"])),
+    df_max["execution_time"].to_numpy(),
+    marker=7,
+    fillstyle="none",
+    lw=0,
+)
+plt.plot(
+    range(len(avg["execution_time"])),
+    df_min["execution_time"].to_numpy(),
+    marker=6,
+    fillstyle="none",
+    lw=0,
+)
+
+
 # Add labels and title
 plt.xlabel(param)
 plt.ylabel("Execution Time")
