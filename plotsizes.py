@@ -6,6 +6,7 @@ import matplotlib.pyplot as plt
 import argparse
 
 import numpy as np
+import pandas as pd
 
 from helpers.formating import HumanBytes
 
@@ -14,15 +15,13 @@ parser.add_argument("input", type=str, help="The input file")
 args = parser.parse_args()
 
 
-# Load the JSON data
-with open(args.input) as f:
-    data = json.load(f)
+df = pd.read_csv(args.input)
 
-
-# Separate the file sizes into two lists: tmp_files and other_files
-# Prepare the event plot data
-lines = []
-legendLabels = []
+avgs = df.groupby(["branch", "params", "file"], as_index=False).mean()
+stds = df.groupby(["branch", "params", "file"], as_index=False).std(ddof=0)
+print(avgs)
+params = avgs[["branch", "params"]].drop_duplicates()
+print(params)
 for idx, (file, file_data) in enumerate(data.items()):
     for i, (process, process_data) in enumerate(file_data.items()):
         creation_time = process_data["creation_time"]

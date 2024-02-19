@@ -61,6 +61,9 @@ def getVersions():
 
 
 def runSam(result_dir: str, run_counter=0):
+    print("---------------------------------")
+    print(f"Runing repetion: {run_counter}/{args.reps}")
+    print("---------------------------------")
 
     if not os.path.exists(f"{result_dir}/results.csv"):
         with open(f"{result_dir}/results.csv", "w") as csvFile:
@@ -123,6 +126,9 @@ def runSam(result_dir: str, run_counter=0):
         if not os.path.exists(f"{result_dir}/fileinfo.csv"):
             with open(f"{result_dir}/fileinfo.csv", "w") as file:
                 file.write("run_counter,branch,params,operation,file,timestamp\n")
+        if not os.path.exists(f"{result_dir}/filesizes.csv"):
+            with open(f"{result_dir}/filesizes.csv", "w") as file:
+                file.write("run_counter,branch,params,file,bytes\n")
 
         with open(f"{result_dir}/fileinfo.csv", "a") as file:
             for info in stderr.split("\n"):
@@ -131,6 +137,14 @@ def runSam(result_dir: str, run_counter=0):
                 parts = info.strip().split()
                 file.write(
                     f"{run_counter},{versions['samtoolsBranch']},{line},{parts[1]},{parts[2]},{parts[3]}\n"
+                )
+        with open(f"{result_dir}/filesizes.csv", "a") as file:
+            for info in stderr.split("\n"):
+                if not info.strip().startswith("[size-info]"):
+                    continue
+                parts = info.strip().split()
+                file.write(
+                    f"{run_counter},{versions['samtoolsBranch']},{line},{parts[1]},{parts[2]}\n"
                 )
         print(stderr)
         print(result.stdout.decode("ascii"))
@@ -172,6 +186,9 @@ if __name__ == "__main__":
         for i in range(args.reps):
             delete_old_dirs(ask=False)
             runSam(result_dir, i)
+
+        print("All runs finished")
+        print("results written to: " + os.path.abspath(result_dir))
 
     except Exception as e:
         print(traceback.format_exc())
