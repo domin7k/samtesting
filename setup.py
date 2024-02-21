@@ -1,8 +1,8 @@
 import subprocess
 
 subprocess.run(["git", "pull"])
-subprocess.run(["git", "--git-dir", "../samtools/.git", "pull"])
-subprocess.run(["git", "--git-dir", "../htslib/.git", "pull"])
+subprocess.run(["(cd ../samtools/ && git pull)"], shell=True)
+subprocess.run(["(cd ../htslib/ && git pull"], shell=True)
 subprocess.run(["(cd ../samtools/ && make clean)"], shell=True)
 subprocess.run(["(cd ../samtools/ && make)"], shell=True)
 subprocess.run(["(cd ../htslib/ && make clean)"], shell=True)

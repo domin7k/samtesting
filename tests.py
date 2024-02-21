@@ -62,7 +62,7 @@ def getVersions():
 
 def runSam(result_dir: str, run_counter=0):
     print("---------------------------------")
-    print(f"Runing repetion: {run_counter}/{args.reps}")
+    print(f"Runing repetion: {run_counter + 1}/{args.reps}")
     print("---------------------------------")
 
     if not os.path.exists(f"{result_dir}/results.csv"):
