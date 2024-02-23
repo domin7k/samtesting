@@ -46,6 +46,15 @@ parser.add_argument(
     nargs="?",
 )
 
+parser.add_argument(
+    "-pname",
+    dest="paramname",
+    type=str,
+    help="the param display name to plot against",
+    default=PARAM,
+    nargs="?",
+)
+
 
 args = parser.parse_args()
 
@@ -74,6 +83,10 @@ for file in [args.filename, args.filename2]:
     avg[param] = avg["params"].apply(extractParam)
     df_max[param] = df_max["params"].apply(extractParam)
     df_min[param] = df_min["params"].apply(extractParam)
+
+    avg[param] = avg[param].apply(pd.to_numeric, errors="coerce")
+    df_max[param] = df_max[param].apply(pd.to_numeric, errors="coerce")
+    df_min[param] = df_min[param].apply(pd.to_numeric, errors="coerce")
 
     avg = avg.sort_values(by=[param])
     df_max = df_max.sort_values(by=[param])
@@ -117,9 +130,9 @@ for file in [args.filename, args.filename2]:
 
 
 # Add labels and title
-plt.xlabel(param)
+plt.xlabel(args.paramname if args.paramname else param)
 plt.ylabel("Execution Time")
-plt.title(f"Execution Time vs {param}")
+plt.title(f"Execution Time vs {args.paramname if args.paramname else param}")
 plt.ylim(bottom=0)
 
 # Set xticks

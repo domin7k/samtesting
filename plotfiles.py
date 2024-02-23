@@ -104,7 +104,16 @@ legendLabels = []
 ticks = []
 ticks_idx = []
 sizes_human_readable = []
-for i, (process, files) in enumerate(lines.items()):
+for i, (process, files) in enumerate(
+    sorted(
+        lines.items(),
+        key=lambda p: (
+            int(p[0].strip().split(" -@ ")[1].strip().split(" ")[0])
+            if " -@ " in p[0]
+            else p[0]
+        ),
+    )
+):
     max_time = max([x[1] for x in events[process]])
     max_dur = max(max_dur, max_time)
 
@@ -161,8 +170,18 @@ for y, xs, c, s in zip(all_ys, all_xs, all_color, all_size):
 
 add_yticks = []
 add_ytickidx = []
-for y, (process, sortlist) in enumerate(events.items()):
-    add_ytickidx.append(-y - 1)
+for y, (process, sortlist) in enumerate(
+    sorted(
+        events.items(),
+        key=lambda p: (
+            int(p[0].strip().split(" -@ ")[1].strip().split(" ")[0])
+            if " -@ " in p[0]
+            else p[0]
+        ),
+    )
+):
+    ys = y - len(legendLabels) - 2
+    add_ytickidx.append(ys)
     add_yticks.append("Sorting Activity")
 
     ordered_list = sorted(sortlist, key=lambda x: x[1])
@@ -185,12 +204,12 @@ for y, (process, sortlist) in enumerate(events.items()):
     print(time_list)
 
     c = legendColors[y]
-    plt.plot([start, end], [-y - 1, -y - 1], linestyle="--", color=c, lw=1),
+    plt.plot([start, end], [ys, ys], linestyle="--", color=c, lw=1),
 
     for xs in time_list:
         plt.plot(
             xs,
-            [-y - 1, -y - 1],
+            [ys, ys],
             color=c,
             lw=3,
         )

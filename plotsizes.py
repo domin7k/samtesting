@@ -69,7 +69,9 @@ for idx, param in params.iterrows():
     ]
     all_lines.append([process_tmp, process_other])
     stdslist.append([std_process_tmp, std_process_other])
-    legendLabels.append(param["branch"] + "\n" + param["params"])
+    legendLabels.append(
+        param["branch"] + "\n" + param["params"].split(" -l ")[1].strip().split(" ")[0]
+    )
 
 print(all_lines)
 
@@ -178,6 +180,7 @@ for i in range(len(all_ticks)):
 # Add legend to the plot
 plt.legend()
 plt.ylim((0, max(all_xs) * 1.1))
+plt.xlabel("Compression Level")
 
 # Show the plot
 plt.show()
