@@ -126,14 +126,23 @@ for i, (process, files) in enumerate(
     active_ys = range(
         i, len(files.items()) * (len(lines.items()) + 1), len(lines.items()) + 1
     )
-    active_xs = [[file["writestart"], file["mergeend"]] for _, file in files.items()]
+    active_xs = [
+        [
+            file["writestart"],
+            file["mergeend"] if "mergeend" in file else file["writeend"],
+        ]
+        for _, file in files.items()
+    ]
     active_color = [color for _ in files.items()]
     active_size = [3 for _ in files.items()]
     a_ticks = [n for n, _ in files.items()]
     # a_sizes = [HumanBytes.format(line[2]) for line in process]
 
     ondisk_xs = [
-        [file["mergeend"], (file["deleted"] if file["deleted"] > 0 else max_time)]
+        [
+            file["mergeend"] if "mergeend" in file else file["writeend"],
+            (file["deleted"] if file["deleted"] > 0 else max_time),
+        ]
         for _, file in files.items()
     ]
     ondisk_color = ["k" for _ in files.items()]
