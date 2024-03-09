@@ -46,6 +46,10 @@ colorslist = [
 # colors = iter(cm.tab20b(np.linspace(0, 1, len(lines))))
 
 df = pd.read_csv(args.input)
+df = df[
+    df["params"]
+    == "sort -@ 1 -m 400M -o ../sorted/outputOfTest_3/sorted.bam ../unsorted_bam_files/onepercent.bam"
+]
 
 max_run_counter = df["run_counter"].max()
 middle = int(max_run_counter / 2) if max_run_counter > 1 else 0

@@ -84,6 +84,22 @@ for file in [args.filename, args.filename2]:
     df_max[param] = df_max["params"].apply(extractParam)
     df_min[param] = df_min["params"].apply(extractParam)
 
+    avg[param] = avg[param].apply(
+        lambda x: (
+            x if not (x.endswith("M") or x.endswith("G")) else x.strip("M").strip("G")
+        )
+    )
+    df_max[param] = df_max[param].apply(
+        lambda x: (
+            x if not (x.endswith("M") or x.endswith("G")) else x.strip("M").strip("G")
+        )
+    )
+    df_min[param] = df_min[param].apply(
+        lambda x: (
+            x if not (x.endswith("M") or x.endswith("G")) else x.strip("M").strip("G")
+        )
+    )
+
     avg[param] = avg[param].apply(pd.to_numeric, errors="coerce")
     df_max[param] = df_max[param].apply(pd.to_numeric, errors="coerce")
     df_min[param] = df_min[param].apply(pd.to_numeric, errors="coerce")
