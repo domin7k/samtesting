@@ -25,6 +25,14 @@ sortedcolor = "#999999"
 
 parser = argparse.ArgumentParser(description="Plot the file sizes and creation times")
 parser.add_argument("input", type=str, help="The input file")
+parser.add_argument(
+    "-p",
+    dest="param",
+    type=str,
+    help="the param to plot against",
+    default="-l",
+    nargs="?",
+)
 args = parser.parse_args()
 
 
@@ -70,7 +78,9 @@ for idx, param in params.iterrows():
     all_lines.append([process_tmp, process_other])
     stdslist.append([std_process_tmp, std_process_other])
     legendLabels.append(
-        param["branch"] + "\n" + param["params"].split(" -l ")[1].strip().split(" ")[0]
+        param["branch"]
+        + "\n"
+        + param["params"].split(" -" + args.param + " ")[1].strip().split(" ")[0]
     )
 
 print(all_lines)

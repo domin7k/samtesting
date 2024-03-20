@@ -55,6 +55,14 @@ parser.add_argument(
     nargs="?",
 )
 
+# add argument to indicate if speedup should be plotted
+parser.add_argument(
+    "-s",
+    dest="speedup",
+    action="store_true",
+    help="plot the speedup instead of the execution time",
+)
+
 
 args = parser.parse_args()
 
@@ -66,6 +74,10 @@ def extractParam(param_string):
         return "No Param"
     return param_string.strip().split(param)[1].strip().split(" ")[0]
 
+
+df_avgs = []
+df_mins = []
+df_maxs = []
 
 # Read the CSV file
 for file in [args.filename, args.filename2]:
@@ -108,48 +120,87 @@ for file in [args.filename, args.filename2]:
     df_max = df_max.sort_values(by=[param])
     df_min = df_min.sort_values(by=[param])
 
-    # print the mem column
-    print(avg[param])
+    if not args.speedup:
 
-    # Plot the execution time against the 'mem' column
-    plt.fill_between(
-        x=range(len(avg["execution_time"])),
-        y1=df_min["execution_time"].to_numpy(),
-        y2=df_max["execution_time"].to_numpy(),
-        alpha=0.20,
+        # Plot the execution time against the 'mem' column
+        plt.fill_between(
+            x=range(len(avg["execution_time"])),
+            y1=df_min["execution_time"].to_numpy(),
+            y2=df_max["execution_time"].to_numpy(),
+            alpha=0.20,
+        )
+        plt.plot(
+            range(len(avg["execution_time"])),
+            avg["execution_time"].to_numpy(),
+            marker="o",
+            fillstyle="none",
+            label=(
+                (args.desciption1 if file == args.filename else args.desciption2)
+                if args.desciption1 and args.desciption2
+                else None
+            ),
+        )
+        plt.plot(
+            range(len(avg["execution_time"])),
+            df_max["execution_time"].to_numpy(),
+            marker=7,
+            fillstyle="none",
+            lw=0,
+        )
+        plt.plot(
+            range(len(avg["execution_time"])),
+            df_min["execution_time"].to_numpy(),
+            marker=6,
+            fillstyle="none",
+            lw=0,
+        )
+
+    else:
+        df_mins.append(df_min)
+        df_maxs.append(df_max)
+        df_avgs.append(avg)
+
+speedup_values = []
+if args.speedup:
+    speedup_values = (
+        df_avgs[1]["execution_time"].to_numpy()
+        / df_avgs[0]["execution_time"].to_numpy()
     )
     plt.plot(
-        range(len(avg["execution_time"])),
-        avg["execution_time"].to_numpy(),
+        range(len(df_avgs[0]["execution_time"])),
+        speedup_values,
         marker="o",
         fillstyle="none",
         label=(
-            (args.desciption1 if file == args.filename else args.desciption2)
+            (args.desciption2 + "/" + args.desciption1)
             if args.desciption1 and args.desciption2
             else None
         ),
-    )
-    plt.plot(
-        range(len(avg["execution_time"])),
-        df_max["execution_time"].to_numpy(),
-        marker=7,
-        fillstyle="none",
-        lw=0,
-    )
-    plt.plot(
-        range(len(avg["execution_time"])),
-        df_min["execution_time"].to_numpy(),
-        marker=6,
-        fillstyle="none",
-        lw=0,
     )
 
 
 # Add labels and title
 plt.xlabel(args.paramname if args.paramname else param)
-plt.ylabel("Execution Time")
-plt.title(f"Execution Time vs {args.paramname if args.paramname else param}")
 plt.ylim(bottom=0)
+
+if not args.speedup:
+    plt.ylabel("Execution Time")
+    plt.title(f"Execution Time vs {args.paramname if args.paramname else param}")
+else:
+    plt.ylabel("Speedup")
+    plt.title(f"Speedup vs {args.paramname if args.paramname else param}")
+    # set yticks to percent
+    plt.gca().yaxis.set_major_formatter(ticker.PercentFormatter(xmax=1))
+    for i, v in enumerate(speedup_values):
+        plt.annotate(
+            f"{v:.2%}",
+            xy=(i, v),
+            xytext=(0, -7),
+            textcoords="offset points",
+            ha="center",
+            va="top",
+        )
+
 
 # Set xticks
 plt.xticks(range(len(avg["execution_time"])), avg[param])
