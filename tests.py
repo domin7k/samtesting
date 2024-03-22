@@ -103,9 +103,10 @@ def runSam(result_dir: str, run_counter=0):
         start_resources = resource.getrusage(resource.RUSAGE_CHILDREN)
 
         result = subprocess.run(
-            ["../samtools/samtools"] + params,
+            "../samtools/samtools " + " ".join(params),
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
+            shell=True,
         )
 
         end_resources = resource.getrusage(resource.RUSAGE_CHILDREN)
