@@ -1,1 +1,1 @@
-sort -@ 16 -m 2G -l 0 ../unsorted_bam_files/onepercent.bam > /dev/null
+sort -@ 16 -m 2G -l 0 ../unsorted_bam_files/ocopy.bam > /dev/null
