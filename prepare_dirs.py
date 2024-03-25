@@ -69,4 +69,4 @@ def delete_old_dirs(ask=True):
 
 
 if __name__ == "__main__":
-    delete_old_dirs()
+    delete_old_dirs(ask=False)
