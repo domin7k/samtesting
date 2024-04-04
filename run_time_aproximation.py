@@ -8,9 +8,8 @@ parser.add_argument("step", type=int, default=1, nargs="?")
 args = parser.parse_args()
 
 
-def get_times(j):
+def get_times(j, max_tmp_files=64):
     time = 0
-    max_tmp_files = 64
     n_big_files = 0
     n_files = 0
 
@@ -39,9 +38,8 @@ def get_times(j):
     return time
 
 
-def get_times2(j):
+def get_times2(j, max_tmp_files=64):
     time = 0
-    max_tmp_files = 64
     n_big_files = 0
     n_files = 0
 
@@ -80,11 +78,15 @@ x = range(0, args.run_number + 1, args.step)
 y1 = [get_times(i) for i in x]
 print("generating times2")
 y2 = [get_times2(i) for i in x]
+y3 = [get_times(i, 1024) for i in x]
+y4 = [get_times2(i, 1024) for i in x]
 
-plt.plot(x, y1, label="get_times")
-plt.plot(x, y2, label="get_times2")
-plt.xlabel("Number of runs")
-plt.ylabel("Time")
-plt.title("Comparison of get_times and get_times2")
+plt.plot(x, y1, label="default")
+plt.plot(x, y2, label="allways max tmps")
+plt.plot(x, y3, label="default but with up to 1024 tmp files")
+plt.plot(x, y4, label="allways max tmps with up to 1024 tmp files")
+plt.xlabel("Number of tmp files")
+plt.ylabel("number of writes")
+plt.title("Comparison of merge strategies")
 plt.legend()
 plt.show()
