@@ -1,4 +1,4 @@
-sort -@ 1 -m 48G -l 1 ../unsorted_bam_files/tenpercent.bam.bam -o ../sorted/outputOfTest/sorted.bam
+sort -@ 1 -m 48G -l 1 ../unsorted_bam_files/tenpercent.bam -o ../sorted/outputOfTest/sorted.bam
 sort -@ 2 -m 24G -l 1 ../unsorted_bam_files/tenpercent.bam -o ../sorted/outputOfTest/sorted.bam
 sort -@ 4 -m 12G -l 1 ../unsorted_bam_files/tenpercent.bam -o ../sorted/outputOfTest/sorted.bam
 sort -@ 8 -m 6G -l 1 ../unsorted_bam_files/tenpercent.bam -o ../sorted/outputOfTest/sorted.bam
