@@ -26,7 +26,8 @@ parser.add_argument(
     type=str,
     help="The description of the second csv file.",
     default=None,
-    nargs="?",
+    nargs="*",
+    action="append",
 )
 # optionales zweites argument für zweites input csv
 parser.add_argument(
@@ -35,7 +36,8 @@ parser.add_argument(
     type=str,
     help="The filename to get the csv data from.",
     default=None,
-    nargs="?",
+    nargs="*",
+    action="append",
 )
 parser.add_argument(
     "-p",
@@ -79,8 +81,12 @@ df_avgs = []
 df_mins = []
 df_maxs = []
 
+print(args.filename2)
+print(args.desciption2)
 # Read the CSV file
-for file in [args.filename, args.filename2]:
+for no, file in enumerate(
+    [args.filename] + [item for row in args.filename2 for item in row]
+):
     if not file:
         continue
 
@@ -135,7 +141,11 @@ for file in [args.filename, args.filename2]:
             marker="o",
             fillstyle="none",
             label=(
-                (args.desciption1 if file == args.filename else args.desciption2)
+                (
+                    args.desciption1
+                    if file == args.filename
+                    else args.desciption2[no - 1]
+                )
                 if args.desciption1 and args.desciption2
                 else None
             ),
