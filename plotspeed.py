@@ -8,6 +8,19 @@ from matplotlib import ticker
 
 PARAM = "-l"
 
+colorslist = [
+    "#377eb8",
+    "#ff7f00",
+    "#e41a1c",
+    "#f781bf",
+    "#a65628",
+    "#4daf4a",
+    "#984ea3",
+    "#999999",
+    "#dede00",
+    "#377eb8",
+]
+
 
 # ArgumentParser erstellen und Argument hinzufügen
 parser = argparse.ArgumentParser(description="Plot.")
@@ -26,7 +39,8 @@ parser.add_argument(
     type=str,
     help="The description of the second csv file.",
     default=None,
-    nargs="?",
+    nargs="*",
+    action="append",
 )
 # optionales zweites argument für zweites input csv
 parser.add_argument(
@@ -35,7 +49,8 @@ parser.add_argument(
     type=str,
     help="The filename to get the csv data from.",
     default=None,
-    nargs="?",
+    nargs="*",
+    action="append",
 )
 parser.add_argument(
     "-p",
@@ -79,8 +94,12 @@ df_avgs = []
 df_mins = []
 df_maxs = []
 
+print(args.filename2)
+print(args.desciption2)
 # Read the CSV file
-for file in [args.filename, args.filename2]:
+for no, file in enumerate(
+    [args.filename] + [item for row in args.filename2 for item in row]
+):
     if not file:
         continue
 
@@ -128,14 +147,20 @@ for file in [args.filename, args.filename2]:
             y1=df_min["execution_time"].to_numpy(),
             y2=df_max["execution_time"].to_numpy(),
             alpha=0.20,
+            color=colorslist[no],
         )
         plt.plot(
             range(len(avg["execution_time"])),
             avg["execution_time"].to_numpy(),
             marker="o",
             fillstyle="none",
+            color=colorslist[no],
             label=(
-                (args.desciption1 if file == args.filename else args.desciption2)
+                (
+                    args.desciption1
+                    if file == args.filename
+                    else args.desciption2[no - 1][0]
+                )
                 if args.desciption1 and args.desciption2
                 else None
             ),
@@ -146,6 +171,7 @@ for file in [args.filename, args.filename2]:
             marker=7,
             fillstyle="none",
             lw=0,
+            color=colorslist[no],
         )
         plt.plot(
             range(len(avg["execution_time"])),
@@ -153,6 +179,7 @@ for file in [args.filename, args.filename2]:
             marker=6,
             fillstyle="none",
             lw=0,
+            color=colorslist[no],
         )
 
     else:
