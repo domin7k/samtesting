@@ -12,6 +12,7 @@ import time
 import traceback
 
 import pandas as pd
+import psutil
 from TempFileWatcher import TempFileWatcher
 import config
 from helpers.formating import HumanBytes
@@ -68,7 +69,7 @@ def runSam(result_dir: str, run_counter=0):
     if not os.path.exists(f"{result_dir}/results.csv"):
         with open(f"{result_dir}/results.csv", "w") as csvFile:
             csvFile.write(
-                "run_counter,branch,params,user_time,system_time,execution_time\n"
+                "run_counter,branch,params,user_time,system_time,execution_time,io_wait\n"
             )
 
     with open(config.TEMP_SAMPARAMS, "r") as file:
@@ -101,6 +102,7 @@ def runSam(result_dir: str, run_counter=0):
         print(f"Params: {params}")
         start_time = time.time()
         start_resources = resource.getrusage(resource.RUSAGE_CHILDREN)
+        start_io_wait = psutil.cpu_times().iowait
 
         result = subprocess.run(
             "../samtools/samtools " + " ".join(params),
@@ -109,18 +111,21 @@ def runSam(result_dir: str, run_counter=0):
             shell=True,
         )
 
+        end_io_wait = psutil.cpu_times().iowait
+
         end_resources = resource.getrusage(resource.RUSAGE_CHILDREN)
         end_time = time.time()
 
         execution_time = end_time - start_time
         user_time = end_resources.ru_utime - start_resources.ru_utime
         system_time = end_resources.ru_stime - start_resources.ru_stime
+        io_wait_time = end_io_wait - start_io_wait
 
         print(f"Execution time: {execution_time} seconds")
         print(f"User time: {user_time} seconds")
         with open(f"{result_dir}/results.csv", "a") as csvFile:
             csvFile.write(
-                f"{run_counter},{versions['samtoolsBranch']},{line},{user_time},{system_time},{execution_time}\n"
+                f"{run_counter},{versions['samtoolsBranch']},{line},{user_time},{system_time},{execution_time},{io_wait_time}\n"
             )
 
         stderr = result.stderr.decode("ascii")
