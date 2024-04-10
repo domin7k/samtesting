@@ -8,6 +8,19 @@ from matplotlib import ticker
 
 PARAM = "-l"
 
+colorslist = [
+    "#377eb8",
+    "#ff7f00",
+    "#e41a1c",
+    "#f781bf",
+    "#a65628",
+    "#4daf4a",
+    "#984ea3",
+    "#999999",
+    "#dede00",
+    "#377eb8",
+]
+
 
 # ArgumentParser erstellen und Argument hinzufügen
 parser = argparse.ArgumentParser(description="Plot.")
@@ -134,17 +147,19 @@ for no, file in enumerate(
             y1=df_min["execution_time"].to_numpy(),
             y2=df_max["execution_time"].to_numpy(),
             alpha=0.20,
+            color=colorslist[no],
         )
         plt.plot(
             range(len(avg["execution_time"])),
             avg["execution_time"].to_numpy(),
             marker="o",
             fillstyle="none",
+            color=colorslist[no],
             label=(
                 (
                     args.desciption1
                     if file == args.filename
-                    else args.desciption2[no - 1]
+                    else args.desciption2[no - 1][0]
                 )
                 if args.desciption1 and args.desciption2
                 else None
@@ -156,6 +171,7 @@ for no, file in enumerate(
             marker=7,
             fillstyle="none",
             lw=0,
+            color=colorslist[no],
         )
         plt.plot(
             range(len(avg["execution_time"])),
@@ -163,6 +179,7 @@ for no, file in enumerate(
             marker=6,
             fillstyle="none",
             lw=0,
+            color=colorslist[no],
         )
 
     else:

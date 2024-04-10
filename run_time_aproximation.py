@@ -23,6 +23,7 @@ def get_times(j, max_tmp_files=64):
             consolidate_from = n_big_files
             big_files.append(n_files - consolidate_from)
         elif n_files >= max_tmp_files:
+            print(i)
             is_big_merge = True
             consolidate_from = 0
             time = time + sum(big_files)
