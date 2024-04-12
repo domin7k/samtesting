@@ -1,5 +1,5 @@
-sort -@ 1 -m 48G ../unsorted_bam_files/onepercent.bam | ../samtools/samtools view -@ 1 -o ../sorted/outputOfTest/output.bam
-sort -@ 2 -m 24G ../unsorted_bam_files/onepercent.bam | ../samtools/samtools view -@ 2 -o ../sorted/outputOfTest/output.bam 
-sort -@ 4 -m 12G ../unsorted_bam_files/onepercent.bam | ../samtools/samtools view -@ 4 -o ../sorted/outputOfTest/output.bam 
-sort -@ 8 -m 6G ../unsorted_bam_files/onepercent.bam  | ../samtools/samtools view -@ 8 -o ../sorted/outputOfTest/output.bam
-sort -@ 16 -m 3G ../unsorted_bam_files/onepercent.bam | ../samtools/samtools view -@ 16 -o ../sorted/outputOfTest/output.bam
+sort -@ 1 -m 8000M ../unsorted_bam_files/onepercent.bam | ../samtools/samtools view -@ 1 -o ../sorted/outputOfTest_1/output.bam
+sort -@ 2 -m 4000M ../unsorted_bam_files/onepercent.bam | ../samtools/samtools view -@ 2 -o ../sorted/outputOfTest_2/output.bam 
+sort -@ 4 -m 2000M ../unsorted_bam_files/onepercent.bam | ../samtools/samtools view -@ 4 -o ../sorted/outputOfTest_3/output.bam 
+sort -@ 8 -m 1000M ../unsorted_bam_files/onepercent.bam  | ../samtools/samtools view -@ 8 -o ../sorted/outputOfTest_4/output.bam
+sort -@ 16 -m 500M ../unsorted_bam_files/onepercent.bam | ../samtools/samtools view -@ 16 -o ../sorted/outputOfTest_5/output.bam
