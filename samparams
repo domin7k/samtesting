@@ -1,5 +1,5 @@
-sort -@ 1 -m 48G ../unsorted_bam_files/onepercent.bam -o ../sorted/outputOfTest/sorted.bam && ../samtools/samtools view -@ 1 -o ../sorted/outputOfTest/output.bam
-sort -@ 2 -m 24G ../unsorted_bam_files/onepercent.bam -o ../sorted/outputOfTest_1/sorted.bam && ../samtools/samtools view -@ 2 -o ../sorted/outputOfTest_1/output.bam 
-sort -@ 4 -m 12G ../unsorted_bam_files/onepercent.bam -o ../sorted/outputOfTest_2/sorted.bam && ../samtools/samtools view -@ 4 -o ../sorted/outputOfTest_2/output.bam 
-sort -@ 8 -m 06G ../unsorted_bam_files/onepercent.bam -o ../sorted/outputOfTest_3/sorted.bam && ../samtools/samtools view -@ 8 -o ../sorted/outputOfTest_3/output.bam
-sort -@ 16 -m 3G ../unsorted_bam_files/onepercent.bam -o ../sorted/outputOfTest_4/sorted.bam && ../samtools/samtools view -@ 16 -o ../sorted/outputOfTest_4/output.bam
+sort -@ 1 -m 48G ../unsorted_bam_files/onepercent.bam -o ../sorted/outputOfTest/sorted.bam && ../samtools/samtools view ../sorted/outputOfTest/sorted.bam -@ 1 -o ../sorted/outputOfTest/output.bam
+sort -@ 2 -m 24G ../unsorted_bam_files/onepercent.bam -o ../sorted/outputOfTest_1/sorted.bam && ../samtools/samtools view ../sorted/outputOfTest_1/sorted.bam -@ 2 -o ../sorted/outputOfTest_1/output.bam 
+sort -@ 4 -m 12G ../unsorted_bam_files/onepercent.bam -o ../sorted/outputOfTest_2/sorted.bam && ../samtools/samtools view ../sorted/outputOfTest_2/sorted.bam -@ 4 -o ../sorted/outputOfTest_2/output.bam 
+sort -@ 8 -m 06G ../unsorted_bam_files/onepercent.bam -o ../sorted/outputOfTest_3/sorted.bam && ../samtools/samtools view ../sorted/outputOfTest_3/sorted.bam -@ 8 -o  ../sorted/outputOfTest_3/output.bam
+sort -@ 16 -m 3G ../unsorted_bam_files/onepercent.bam -o ../sorted/outputOfTest_4/sorted.bam && ../samtools/samtools view ../sorted/outputOfTest_4/sorted.bam -@ 16 -o ../sorted/outputOfTest_4/output.bam
