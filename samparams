@@ -1,5 +1,20 @@
-sort -@ 1 -m 8000M ../unsorted_bam_files/onepercent.bam | ../samtools/samtools view -@ 1 -o ../sorted/outputOfTest_1/output.bam
-sort -@ 2 -m 4000M ../unsorted_bam_files/onepercent.bam | ../samtools/samtools view -@ 2 -o ../sorted/outputOfTest_2/output.bam 
-sort -@ 4 -m 2000M ../unsorted_bam_files/onepercent.bam | ../samtools/samtools view -@ 4 -o ../sorted/outputOfTest_3/output.bam 
-sort -@ 8 -m 1000M ../unsorted_bam_files/onepercent.bam  | ../samtools/samtools view -@ 8 -o ../sorted/outputOfTest_4/output.bam
-sort -@ 16 -m 500M ../unsorted_bam_files/onepercent.bam | ../samtools/samtools view -@ 16 -o ../sorted/outputOfTest_5/output.bam
+sort -l 0 -@ 16 -m 3G ../unsorted_bam_files/onepercent.bam -o ../sorted/outputOfTest/sortedLevel0.bam
+view -@ 16 ../unsorted_bam_files/onepercent.bam -o ../sorted/outputOfTest/unsortedLevel0.bam --output-fmt-option level=0
+sort -l 1 -@ 16 -m 3G ../unsorted_bam_files/onepercent.bam -o ../sorted/outputOfTest/sortedLevel1.bam
+view -@ 16 ../unsorted_bam_files/onepercent.bam -o ../sorted/outputOfTest/unsortedLevel1.bam --output-fmt-option level=1
+sort -l 2 -@ 16 -m 3G ../unsorted_bam_files/onepercent.bam -o ../sorted/outputOfTest/sortedLevel2.bam
+view -@ 16 ../unsorted_bam_files/onepercent.bam -o ../sorted/outputOfTest/unsortedLevel2.bam --output-fmt-option level=2
+sort -l 3 -@ 16 -m 3G ../unsorted_bam_files/onepercent.bam -o ../sorted/outputOfTest/sortedLevel3.bam
+view -@ 16 ../unsorted_bam_files/onepercent.bam -o ../sorted/outputOfTest/unsortedLevel3.bam --output-fmt-option level=3
+sort -l 4 -@ 16 -m 3G ../unsorted_bam_files/onepercent.bam -o ../sorted/outputOfTest/sortedLevel4.bam
+view -@ 16 ../unsorted_bam_files/onepercent.bam -o ../sorted/outputOfTest/unsortedLevel4.bam --output-fmt-option level=4
+sort -l 5 -@ 16 -m 3G ../unsorted_bam_files/onepercent.bam -o ../sorted/outputOfTest/sortedLevel5.bam
+view -@ 16 ../unsorted_bam_files/onepercent.bam -o ../sorted/outputOfTest/unsortedLevel5.bam --output-fmt-option level=5
+sort -l 6 -@ 16 -m 3G ../unsorted_bam_files/onepercent.bam -o ../sorted/outputOfTest/sortedLevel6.bam
+view -@ 16 ../unsorted_bam_files/onepercent.bam -o ../sorted/outputOfTest/unsortedLevel6.bam --output-fmt-option level=6
+sort -l 7 -@ 16 -m 3G ../unsorted_bam_files/onepercent.bam -o ../sorted/outputOfTest/sortedLevel7.bam
+view -@ 16 ../unsorted_bam_files/onepercent.bam -o ../sorted/outputOfTest/unsortedLevel7.bam --output-fmt-option level=7
+sort -l 8 -@ 16 -m 3G ../unsorted_bam_files/onepercent.bam -o ../sorted/outputOfTest/sortedLevel8.bam
+view -@ 16 ../unsorted_bam_files/onepercent.bam -o ../sorted/outputOfTest/unsortedLevel8.bam --output-fmt-option level=8
+sort -l 9 -@ 16 -m 3G ../unsorted_bam_files/onepercent.bam -o ../sorted/outputOfTest/sortedLevel9.bam
+view -@ 16 ../unsorted_bam_files/onepercent.bam -o ../sorted/outputOfTest/unsortedLevel9.bam --output-fmt-option level=9
