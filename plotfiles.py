@@ -1,8 +1,11 @@
+import subprocess
+import sys
 from matplotlib import cm
 import matplotlib.pyplot as plt
 import json
 import numpy as np
 import pandas as pd
+from curlyBrace import curlyBrace
 from helpers.formating import HumanBytes
 
 # add command line argument for input file
@@ -10,7 +13,68 @@ import argparse
 
 parser = argparse.ArgumentParser(description="Plot the file sizes and creation times")
 parser.add_argument("input", type=str, help="The input file")
+parser.add_argument(
+    "-d",
+    dest="description",
+    type=str,
+    help="The description of the second csv file.",
+    default=None,
+    nargs="*",
+    action="append",
+)
+# optionales zweites argument für zweites input csv
+parser.add_argument(
+    "-f",
+    dest="filename",
+    type=str,
+    help="The filename to get the csv data from.",
+    default=None,
+    nargs="*",
+    action="append",
+)
+parser.add_argument(
+    "-save",
+    dest="save",
+    type=str,
+    help="name of the plot file to save",
+    nargs="?",
+)
+parser.add_argument(
+    "-intername",
+    dest="intername",
+    type=str,
+    help="name of the output files right before final outputs",
+    nargs="?",
+)
+parser.add_argument(
+    "-smaller",
+    dest="smaller",
+    type=int,
+    help="number to devide the width by",
+    nargs="?",
+)
+parser.add_argument(
+    "-title",
+    dest="title",
+    type=str,
+    help="title of the plot",
+    default="Writing Activity",
+)
+parser.add_argument(
+    "-filter",
+    dest="filter",
+    type=str,
+    help="only keep params matching the filter",
+    nargs="?",
+)
 args = parser.parse_args()
+print(args)
+fig = None
+if args.smaller:
+    fig = plt.figure(figsize=(4.804 / args.smaller, 4 / args.smaller))
+else:
+    fig = plt.figure(figsize=(4.804, 4))
+plt.rcParams.update({"font.family": "serif", "font.serif": []})
 
 colorslist = [
     "#377eb8",
@@ -46,6 +110,10 @@ colorslist = [
 # colors = iter(cm.tab20b(np.linspace(0, 1, len(lines))))
 
 df = pd.read_csv(args.input)
+for file in args.filename:
+    df = pd.concat([df, pd.read_csv(file[0])], ignore_index=True)
+if args.filter:
+    df = df[df["params"].str.contains(args.filter)]
 
 max_run_counter = df["run_counter"].max()
 middle = int(max_run_counter / 2) if max_run_counter > 1 else 0
@@ -104,6 +172,7 @@ legendLabels = []
 ticks = []
 ticks_idx = []
 sizes_human_readable = []
+max_tmp_file_idx = 0
 for i, (process, files) in enumerate(
     sorted(
         lines.items(),
@@ -160,7 +229,7 @@ for i, (process, files) in enumerate(
     legendColors.append(color)
     legendLabels.append(process)
 
-plt.figure()
+max_tmp_file_idx = ticks_idx[[i for i, s in enumerate(ticks) if "tmp" in s][-1]]
 
 for y, xs, c, s in zip(all_ys, all_xs, all_color, all_size):
     plt.plot(
@@ -189,20 +258,17 @@ for y, (process, sortlist) in enumerate(
         ),
     )
 ):
-    ys = y - len(legendLabels) - 2
+    ys = y - len(legendLabels) - 1
     add_ytickidx.append(ys)
     add_yticks.append("Sorting Activity")
 
     ordered_list = sorted(sortlist, key=lambda x: x[1])
-    print(ordered_list)
     sort = [0, 0]
     time_list = []
     start = 0
     end = 0
     for op, time in ordered_list:
-        if op == "start":
-            start = time
-        if op == "end":
+        if op == "end" and end == 0:
             end = time
         if op == "sortstart":
             sort[0] = time
@@ -210,7 +276,6 @@ for y, (process, sortlist) in enumerate(
             sort[1] = time
             time_list.append(sort)
             sort = [0, 0]
-    print(time_list)
 
     c = legendColors[y]
     plt.plot([start, end], [ys, ys], linestyle="--", color=c, lw=1),
@@ -236,14 +301,24 @@ plt.xticks(fontsize=12)
 plt.yticks(add_ytickidx + ticks_idx, add_yticks + ticks, fontsize=8)
 plt.xlim(0, max_dur)
 plt.ylim(len(lines.items()) * -1.5, max(all_ys) + 1)
-plt.xlabel("time (s)", fontsize=12)
+# hide y ticks
+plt.gca().yaxis.set_visible(False)
+plt.xlabel("Execution Time (s)", fontsize=12)
 plt.ylabel("Files", fontsize=12)
 
 
-plt.legend(
+leg = plt.legend(
     handles=[
         plt.Line2D(
-            [0], [0], linewidth=3, color=c, label=legendLabels[process].split(" -o")[0]
+            [0],
+            [0],
+            linewidth=3,
+            color=c,
+            label=(
+                legendLabels[process].split(" -o")[0]
+                if len(args.description) == 0
+                else args.description[process][0]
+            ),
         )
         for process, c in enumerate(legendColors)
     ]
@@ -252,9 +327,93 @@ plt.legend(
             [0], [0], linewidth=1, color="k", label="file not modified but on disk"
         )
     ],
-    bbox_to_anchor=(0.0, 1.02, 1.0, 0.102),
-    loc="lower left",
-    mode="expand",
-    borderaxespad=0.0,
+    # bbox_to_anchor=(0.0, -0.2, 1.0, 0.102),
+    # loc="upper center",
+    # mode="expand",
+    # borderaxespad=0.0,
+    labelspacing=0.2,
 )
+
+
+# get the height of the legend
+bb = leg.get_bbox_to_anchor().inverse_transformed(plt.gca().transAxes)
+print(bb.height)
+plt.title(
+    args.title,
+    fontsize=12,
+)
+
+curlyBrace(
+    fig,
+    plt.gca(),
+    (-2, 0),
+    (-2, max_tmp_file_idx),
+    clip_on=False,
+    color="black",
+    str_text="Temporary\n Files",
+    fontdict={"size": 8},
+    linewidth=1,
+)
+
+curlyBrace(
+    fig,
+    plt.gca(),
+    (-2, add_ytickidx[0]),
+    (-2, add_ytickidx[-1]),
+    clip_on=False,
+    color="black",
+    str_text=" Sorting\n Activity",
+    fontdict={"size": 8},
+    linewidth=1,
+)
+
+if args.intername:
+    curlyBrace(
+        fig,
+        plt.gca(),
+        (-2, sorted(ticks_idx)[-2 * (len(args.filename) + 1)]),
+        (-2, sorted(ticks_idx)[-len(args.filename) - 2]),
+        clip_on=False,
+        color="black",
+        str_text=f"Output\n" + args.intername,
+        fontdict={"size": 8},
+        linewidth=1,
+    )
+
+curlyBrace(
+    fig,
+    plt.gca(),
+    (-2, sorted(ticks_idx)[-len(args.filename) - 1]),
+    (-2, sorted(ticks_idx)[-1]),
+    clip_on=False,
+    color="black",
+    str_text=" Final\n Output",
+    fontdict={"size": 8},
+    linewidth=1,
+)
+
+plt.tight_layout()
+
+if args.save:
+    plt.savefig(
+        "../Faster-Sorting-of-Aligned-DNA-Reads-Files/figures/" + args.save + ".pgf",
+        bbox_inches="tight",
+    )
+    with open(
+        "../Faster-Sorting-of-Aligned-DNA-Reads-Files/figures/" + args.save + ".txt",
+        "w",
+    ) as f:
+        cmd = " ".join(
+            [sys.argv[0]]
+            + [
+                s if s.startswith("-") and not " " in s else '"' + s + '"'
+                for s in sys.argv[1:]
+            ]
+        )
+        f.write(cmd)
+    subprocess.run(
+        f"(cd ../Faster-Sorting-of-Aligned-DNA-Reads-Files/figures/ && git pull && git add . && git commit -m 'added plot {args.save}' && git push)",
+        shell=True,
+    )
+
 plt.show()
