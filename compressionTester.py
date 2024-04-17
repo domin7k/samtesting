@@ -4,7 +4,7 @@ import subprocess
 for l in range(9):
     for t in [1, 2, 4, 8, 16]:
         result = subprocess.run(
-            "../htslib/.bgzip -c -@ "
+            "../htslib/bgzip -c -@ "
             + str(t)
             + " -l "
             + str(l)
