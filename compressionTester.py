@@ -13,6 +13,7 @@ for l in range(9):
             stderr=subprocess.PIPE,
             shell=True,
         )
+        print(result.stderr.decode("ascii"))
         print(
             "Level: "
             + str(l)
