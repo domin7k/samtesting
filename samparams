@@ -1,10 +1,1 @@
-sort -@ 1 -m 25M ../unsorted_bam_files/onepercent.bam -o ../sorted/outputOfTest/sorted.bam
-sort -@ 1 -m 50M ../unsorted_bam_files/onepercent.bam -o ../sorted/outputOfTest/sorted.bam
-sort -@ 1 -m 100M ../unsorted_bam_files/onepercent.bam -o ../sorted/outputOfTest/sorted.bam
-sort -@ 1 -m 200M ../unsorted_bam_files/onepercent.bam -o ../sorted/outputOfTest/sorted.bam
-sort -@ 1 -m 400M ../unsorted_bam_files/onepercent.bam -o ../sorted/outputOfTest/sorted.bam
-sort -@ 1 -m 800M ../unsorted_bam_files/onepercent.bam -o ../sorted/outputOfTest/sorted.bam
-sort -@ 1 -m 1600M ../unsorted_bam_files/onepercent.bam -o ../sorted/outputOfTest/sorted.bam
-sort -@ 1 -m 3200M ../unsorted_bam_files/onepercent.bam -o ../sorted/outputOfTest/sorted.bam
-sort -@ 1 -m 6400M ../unsorted_bam_files/onepercent.bam -o ../sorted/outputOfTest/sorted.bam
-sort -@ 1 -m 12800M ../unsorted_bam_files/onepercent.bam -o ../sorted/outputOfTest/sorted.bam
+sort -@ 1 -m 25600M ../unsorted_bam_files/onepercent.bam -o ../sorted/outputOfTest/sorted.bam
