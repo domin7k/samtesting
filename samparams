@@ -1,6 +1,5 @@
-sort -@ 8 -m 6000M ../unsorted_bam_files/ocopy.bam -o ../sorted/outputOfTest/sorted.bam
-sort -@ 8 -m 3000M ../unsorted_bam_files/fiftypercent.bam -o ../sorted/outputOfTest/sorted.bam
-sort -@ 8 -m 1500M ../unsorted_bam_files/twentyfivepercent.bam -o ../sorted/outputOfTest/sorted.bam
-sort -@ 8 -m 600M ../unsorted_bam_files/tenpercent.bam -o ../sorted/outputOfTest/sorted.bam
-sort -@ 8 -m 300M ../unsorted_bam_files/fivepercent.bam -o ../sorted/outputOfTest/sorted.bam
-sort -@ 8 -m 60M ../unsorted_bam_files/onepercent.bam -o ../sorted/outputOfTest/sorted.bam
+sort -@ 1 -m 48G ../unsorted_bam_files/onepercent.bam  > /dev/null
+sort -@ 2 -m 24G ../unsorted_bam_files/onepercent.bam  > /dev/null
+sort -@ 4 -m 12G ../unsorted_bam_files/onepercent.bam  > /dev/null
+sort -@ 8 -m 6G ../unsorted_bam_files/onepercent.bam  > /dev/null
+sort -@ 16 -m 3G ../unsorted_bam_files/onepercent.bam  > /dev/null
