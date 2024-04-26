@@ -28,7 +28,7 @@ parser.add_argument(
     dest="filename",
     type=str,
     help="The filename to get the csv data from.",
-    default=None,
+    default=[],
     nargs="*",
     action="append",
 )
@@ -113,7 +113,7 @@ df = pd.read_csv(args.input)
 for file in args.filename:
     df = pd.concat([df, pd.read_csv(file[0])], ignore_index=True)
 if args.filter:
-    df = df[df["params"].str.contains(args.filter)]
+    pass  # df = df[df["params"].str.contains(args.filter)]
 
 max_run_counter = df["run_counter"].max()
 middle = int(max_run_counter / 2) if max_run_counter > 1 else 0
@@ -229,7 +229,11 @@ for i, (process, files) in enumerate(
     legendColors.append(color)
     legendLabels.append(process)
 
-max_tmp_file_idx = ticks_idx[[i for i, s in enumerate(ticks) if "tmp" in s][-1]]
+max_tmp_file_idx = (
+    ticks_idx[[i for i, s in enumerate(ticks) if "tmp" in s][-1]]
+    if len([i for i, s in enumerate(ticks) if "tmp" in s]) > 0
+    else 0
+)
 
 for y, xs, c, s in zip(all_ys, all_xs, all_color, all_size):
     plt.plot(
@@ -300,7 +304,7 @@ print(f"legend colors length: {len(legendColors)}")
 plt.xticks(fontsize=12)
 plt.yticks(add_ytickidx + ticks_idx, add_yticks + ticks, fontsize=8)
 plt.xlim(0, max_dur)
-plt.ylim(len(lines.items()) * -1.5, max(all_ys) + 1)
+plt.ylim(len(lines.items()) * -1.5, max(all_ys) if len(all_ys) > 1 else 0 + 1)
 # hide y ticks
 plt.gca().yaxis.set_visible(False)
 plt.xlabel("Execution Time (s)", fontsize=12)
@@ -336,8 +340,6 @@ leg = plt.legend(
 
 
 # get the height of the legend
-bb = leg.get_bbox_to_anchor().inverse_transformed(plt.gca().transAxes)
-print(bb.height)
 plt.title(
     args.title,
     fontsize=12,
@@ -380,17 +382,17 @@ if args.intername:
         linewidth=1,
     )
 
-curlyBrace(
-    fig,
-    plt.gca(),
-    (-2, sorted(ticks_idx)[-len(args.filename) - 1]),
-    (-2, sorted(ticks_idx)[-1]),
-    clip_on=False,
-    color="black",
-    str_text=" Final\n Output",
-    fontdict={"size": 8},
-    linewidth=1,
-)
+# curlyBrace(
+#     fig,
+#     plt.gca(),
+#     (-2, sorted(ticks_idx)[-len(args.filename) - 1]),
+#     (-2, sorted(ticks_idx)[-1]),
+#     clip_on=False,
+#     color="black",
+#     str_text=" Final\n Output",
+#     fontdict={"size": 8},
+#     linewidth=1,
+# )
 
 plt.tight_layout()
 

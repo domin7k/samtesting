@@ -61,7 +61,7 @@ def getVersions():
     }
 
 
-def runSam(result_dir: str, run_counter=0):
+def runSam(result_dir: str, run_counter=0, preargs=""):
     print("---------------------------------")
     print(f"Runing repetion: {run_counter + 1}/{args.reps}")
     print("---------------------------------")
@@ -105,7 +105,7 @@ def runSam(result_dir: str, run_counter=0):
         start_io_wait = psutil.cpu_times().iowait
 
         result = subprocess.run(
-            "../samtools/samtools " + " ".join(params),
+            preargs + "../samtools/samtools " + " ".join(params),
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
             shell=True,
@@ -157,8 +157,7 @@ def runSam(result_dir: str, run_counter=0):
 
 
 if __name__ == "__main__":
-    result_dir = config.TEST_RESULT_DIR + f"/{datetime.datetime.now().isoformat()}"
-    os.makedirs(result_dir)
+
     # # define & launch the log watcher
     # log_watcher = TempFileWatcher(
     #     watchDirectory=config.WATCH_DIRECTORY,
@@ -174,8 +173,16 @@ if __name__ == "__main__":
         description="Run samtools with different parameters"
     )
     parser.add_argument("reps", type=int, help="The number of repetitions")
+    parser.add_argument("-ld", dest="preargs", type=str, help="The preargs", default="")
+    parser.add_argument(
+        "-d", dest="result_dir", type=str, help="The result directory", default=""
+    )
     args = parser.parse_args()
-
+    result_dir = (
+        config.TEST_RESULT_DIR
+        + f"/{datetime.datetime.now().isoformat() + args.result_dir}"
+    )
+    os.makedirs(result_dir)
     try:
         # open a cvs file in the result directory and write the header
         # make a copy of the samparams file
@@ -191,7 +198,7 @@ if __name__ == "__main__":
         json.dump(versions, open(f"{result_dir}/versionsStart.json", "w"))
         for i in range(args.reps):
             delete_old_dirs(ask=False)
-            runSam(result_dir, i)
+            runSam(result_dir, i, args.preargs)
 
         print("All runs finished")
         print("results written to: " + os.path.abspath(result_dir))
