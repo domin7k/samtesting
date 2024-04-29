@@ -104,6 +104,9 @@ args = parser.parse_args()
 
 param = args.param
 
+if len([item for row in args.filename2 for item in row]) > 10:
+    colorslist = matplotlib.cm.tab20.colors
+
 
 def extractParam(param_string):
     if type(param_string) is not str:
@@ -121,7 +124,7 @@ print(args.filename2)
 print(args.desciption2)
 # Read the CSV file
 for no, file in enumerate([item for row in args.filename2 for item in row]):
-    if not file:
+    if not file or "zopfli" in file or "cryptopp" in file:
         continue
 
     df = pd.read_csv(file)
@@ -194,6 +197,9 @@ for no, file in enumerate([item for row in args.filename2 for item in row]):
             fillstyle="none",
             color=colorslist[no],
             label=((args.desciption2[no][0]) if args.desciption2 else None),
+        )
+        plt.text(
+            0, avg[args.time].to_numpy()[0], str(args.desciption2[no][0]), fontsize=6
         )
     else:
         df_mins.append(df_min)

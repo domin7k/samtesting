@@ -196,6 +196,8 @@ if __name__ == "__main__":
 
         versions = getVersions()
         json.dump(versions, open(f"{result_dir}/versionsStart.json", "w"))
+        with open(f"{result_dir}/preargs.txt", "w") as file:
+            file.write(args.preargs)
         for i in range(args.reps):
             delete_old_dirs(ask=False)
             runSam(result_dir, i, args.preargs)
