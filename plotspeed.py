@@ -123,9 +123,12 @@ plt.rcParams.update({"font.family": "serif", "font.serif": []})
 print(args.filename2)
 print(args.desciption2)
 # Read the CSV file
+color_no = -1
 for no, file in enumerate([item for row in args.filename2 for item in row]):
-    if not file or "zopfli" in file or "cryptopp" in file:
+    if not file or "zopfli" in file or "7zip" in file or "cryptopp" in file:
         continue
+
+    color_no += 1
 
     df = pd.read_csv(file)
 
@@ -180,7 +183,7 @@ for no, file in enumerate([item for row in args.filename2 for item in row]):
                 marker=7,
                 fillstyle="none",
                 lw=0,
-                color=colorslist[no],
+                color=colorslist[color_no],
             )
             plt.plot(
                 range(len(avg[args.time])),
@@ -188,14 +191,14 @@ for no, file in enumerate([item for row in args.filename2 for item in row]):
                 marker=6,
                 fillstyle="none",
                 lw=0,
-                color=colorslist[no],
+                color=colorslist[color_no],
             )
         plt.plot(
             range(len(avg[args.time])),
             avg[args.time].to_numpy(),
             marker="o",
             fillstyle="none",
-            color=colorslist[no],
+            color=colorslist[color_no],
             label=((args.desciption2[no][0]) if args.desciption2 else None),
         )
         plt.text(

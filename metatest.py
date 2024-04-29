@@ -2,14 +2,14 @@ import subprocess
 
 
 methods = {
-    # "zlib": [1, 6],
-    "7zip": [1, 6],
-    # "zopfli": [1, 6],
-    # "miniz": [1, 6],
-    # "slz": [1, 3],
-    # "libdeflate": [1, 6],
-    # "zlibng": [1, 6],
-    # "igzip": [1, 3],
+    "zlib": [1, 6],
+    # "7zip": [1, 6],
+    "zopfli": [1, 6],
+    "miniz": [1, 6],
+    "slz": [1],
+    "libdeflate": [1, 6],
+    "zlibng": [1, 6],
+    "igzip": [1, 3],
     # "cryptopp": [1, 6],
 }
 
