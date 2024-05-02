@@ -79,15 +79,22 @@ x = range(0, args.run_number + 1, args.step)
 y1 = [get_times(i) for i in x]
 print("generating times2")
 y2 = [get_times2(i) for i in x]
-y3 = [get_times(i, 1024) for i in x]
-y4 = [get_times2(i, 1024) for i in x]
+y3 = [get_times(i, 1019) for i in x]
+y4 = [get_times2(i, 1019) for i in x]
 
-plt.plot(x, y1, label="default")
-plt.plot(x, y2, label="allways max tmps")
-plt.plot(x, y3, label="default but with up to 1024 tmp files")
-plt.plot(x, y4, label="allways max tmps with up to 1024 tmp files")
-plt.xlabel("Number of tmp files")
-plt.ylabel("number of writes")
+plt.figure(figsize=(4.804, 3))
+plt.rcParams.update({"font.family": "serif", "font.serif": []})
+for xmark in [0, 1, 2, 4, 8, 16, 32, 65, 131, 263, 527]:
+    plt.gca().axvline(xmark, color="grey", linestyle="--", linewidth=0.5)
+plt.plot(x, y1, label="Up to 64 temporary files")
+# plt.plot(x, y2, label="allways max tmps")
+plt.plot(x, y3, label="Up to 1019 temporary files")
+# plt.plot(x, y4, label="allways max tmps with up to 1024 tmp files")
+plt.xlabel("Number of Temporary Files")
+plt.ylabel("Writes (in Memory Size)")
 plt.title("Comparison of merge strategies")
 plt.legend()
+
+plt.tight_layout()
+
 plt.show()

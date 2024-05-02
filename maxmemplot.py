@@ -202,17 +202,20 @@ for no, file in enumerate([item for row in args.filename2 for item in row]):
 
 speedup_values = []
 if args.speedup:
-    speedup_values = df_avgs[1][args.time].to_numpy() / df_avgs[0][args.time].to_numpy()
+    speedup_values = df_avgs[0][args.time].to_numpy() / df_avgs[1][args.time].to_numpy()
+    label = (
+        (args.desciption2[0][0] + " / " + args.desciption2[1][0])
+        if args.desciption2
+        else None
+    )
+    plt.gca().axhline(1, linestyle="--", color="r", linewidth=0.5)
+
     plt.plot(
         range(len(df_avgs[0][args.time])),
         speedup_values,
         marker="o",
         fillstyle="none",
-        label=(
-            (args.desciption2[0][0] + "/" + args.desciption2[0][0])
-            if args.desciption2
-            else None
-        ),
+        label=label,
     )
 
 
@@ -228,28 +231,32 @@ if not args.speedup:
         else f"Execution Time vs {args.paramname if args.paramname else param}"
     )
 else:
-    plt.ylabel("Speedup")
+    plt.ylabel("Speedup \n ")
     plt.title(
         args.title
         if args.title
         else f"Speedup vs {args.paramname if args.paramname else param}"
     )
+    # format y ticks
+    plt.gca().yaxis.set_major_formatter(ticker.FuncFormatter(lambda x, _: f"{x:.1f}"))
+
     # set yticks to percent
-    plt.gca().yaxis.set_major_formatter(ticker.PercentFormatter(xmax=1))
-    for i, v in enumerate(speedup_values):
-        plt.annotate(
-            f"{v:.2%}",
-            xy=(i, v),
-            xytext=(0, -7),
-            textcoords="offset points",
-            ha="center",
-            va="top",
-        )
+    # plt.gca().yaxis.set_major_formatter(ticker.PercentFormatter(xmax=1))
+    # for i, v in enumerate(speedup_values):
+    #     plt.annotate(
+    #         f"{v:.2%}",
+    #         xy=(i, v),
+    #         xytext=(0, -7),
+    #         textcoords="offset points",
+    #         ha="center",
+    #         va="top",
+    #     )
 
 
 # Set xticks
 plt.xticks(range(len(avg[args.time])), avg[param], rotation=45)
-plt.ylim(top=500)
+plt.ylim(top=500 if not args.speedup else 2)
+
 
 if args.desciption2:
     plt.legend()

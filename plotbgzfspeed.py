@@ -5,6 +5,7 @@ import matplotlib
 import pandas as pd
 import matplotlib.pyplot as plt
 from matplotlib import ticker
+from mpl_toolkits.axes_grid1.inset_locator import inset_axes
 
 
 PARAM = "-l"
@@ -117,15 +118,23 @@ def extractParam(param_string):
 df_avgs = []
 df_mins = []
 df_maxs = []
-plt.figure(figsize=(4.804, 4))
+fig = plt.figure(figsize=(4.804, 4))
 plt.rcParams.update({"font.family": "serif", "font.serif": []})
+ax = fig.add_subplot()
+
 
 print(args.filename2)
 print(args.desciption2)
 # Read the CSV file
 color_no = -1
+max_values = []
+inset = inset_axes(ax, width=1, height=0.8, loc=3, bbox_to_anchor=(350, 110))
+
+# change to ax
+
+
 for no, file in enumerate([item for row in args.filename2 for item in row]):
-    if not file or "zopfli" in file or "7zip" in file or "cryptopp" in file:
+    if not file or "7zip" in file or "cryptopp" in file:
         continue
 
     color_no += 1
@@ -193,7 +202,17 @@ for no, file in enumerate([item for row in args.filename2 for item in row]):
                 lw=0,
                 color=colorslist[color_no],
             )
-        plt.plot(
+        max_values.append([avg[args.time][0], color_no])
+        if not "zopfli" in file:
+            ax.plot(
+                range(len(avg[args.time])),
+                avg[args.time].to_numpy(),
+                marker="o",
+                fillstyle="none",
+                color=colorslist[color_no],
+                label=((args.desciption2[no][0]) if args.desciption2 else None),
+            )
+        inset.plot(
             range(len(avg[args.time])),
             avg[args.time].to_numpy(),
             marker="o",
@@ -201,9 +220,9 @@ for no, file in enumerate([item for row in args.filename2 for item in row]):
             color=colorslist[color_no],
             label=((args.desciption2[no][0]) if args.desciption2 else None),
         )
-        plt.text(
-            0, avg[args.time].to_numpy()[0], str(args.desciption2[no][0]), fontsize=6
-        )
+        # plt.text(
+        #     0, avg[args.time].to_numpy()[0], str(args.desciption2[no][0]), fontsize=6
+        # )
     else:
         df_mins.append(df_min)
         df_maxs.append(df_max)
@@ -224,7 +243,7 @@ if args.speedup:
         ),
     )
 
-
+plt.sca(ax)
 # Add labels and title
 plt.xlabel(args.paramname if args.paramname else param)
 plt.ylim(bottom=0)
@@ -236,32 +255,19 @@ if not args.speedup:
         if args.title
         else f"Execution Time vs {args.paramname if args.paramname else param}"
     )
-else:
-    plt.ylabel("Speedup")
-    plt.title(
-        args.title
-        if args.title
-        else f"Speedup vs {args.paramname if args.paramname else param}"
-    )
-    # set yticks to percent
-    plt.gca().yaxis.set_major_formatter(ticker.PercentFormatter(xmax=1))
-    for i, v in enumerate(speedup_values):
-        plt.annotate(
-            f"{v:.2%}",
-            xy=(i, v),
-            xytext=(0, -7),
-            textcoords="offset points",
-            ha="center",
-            va="top",
-        )
 
 
 # Set xticks
 plt.xticks(range(len(avg[args.time])), avg[param])
 
 if args.desciption2:
-    plt.legend()
+    handles, labels = inset.get_legend_handles_labels()
+    order = [a[1] for a in sorted(max_values, key=lambda x: x[0], reverse=True)]
+    plt.legend([handles[idx] for idx in order], [labels[idx] for idx in order], ncol=2)
 plt.tight_layout()
+
+plt.sca(inset)
+plt.xticks(range(len(avg[args.time]))[::2], avg[param][::2])
 
 if args.save:
     plt.savefig(
