@@ -207,6 +207,7 @@ if __name__ == "__main__":
         for i in range(args.reps):
             if not args.changeDirs:
                 delete_old_dirs(ask=False)
+                print("Deleted old directories")
             runSam(result_dir, i, args.preargs)
 
         print("All runs finished")
