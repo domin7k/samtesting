@@ -177,6 +177,12 @@ if __name__ == "__main__":
     parser.add_argument(
         "-d", dest="result_dir", type=str, help="The result directory", default=""
     )
+    parser.add_argument(
+        "-c",
+        dest="changeDirs",
+        action="store_true",
+        help="plot the speedup instead of the execution time",
+    )
     args = parser.parse_args()
     result_dir = (
         config.TEST_RESULT_DIR
@@ -199,7 +205,8 @@ if __name__ == "__main__":
         with open(f"{result_dir}/preargs.txt", "w") as file:
             file.write(args.preargs)
         for i in range(args.reps):
-            delete_old_dirs(ask=False)
+            if not args.changeDirs:
+                delete_old_dirs(ask=False)
             runSam(result_dir, i, args.preargs)
 
         print("All runs finished")
@@ -225,7 +232,7 @@ if __name__ == "__main__":
 # temFiles = {}
 # with open(config.TEMP_SAMPARAMS, "r") as file:
 #     for line in file:
-#         if line.strip() == "" or line.strip().startswith("("):
+#         if line.strip() bam_read1== "" or line.strip().startswith("("):
 #             continue
 
 #         line = line.strip()
