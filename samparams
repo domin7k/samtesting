@@ -1,15 +1,15 @@
-view ../sorted/compressed/sorted.bam -u -o > /dev/null
-view ../sorted/compressed/sortedigzip1.bam -u -o > /dev/null
-view ../sorted/compressed/sortedigzip3.bam -u -o > /dev/null
-view ../sorted/compressed/sortedlibdeflate1.bam -u -o > /dev/null
-view ../sorted/compressed/sortedlibdeflate6.bam -u -o > /dev/null
-view ../sorted/compressed/sortedminiz1.bam -u -o > /dev/null
-view ../sorted/compressed/sortedminiz6.bam -u -o > /dev/null
-view ../sorted/compressed/sortedslz1.bam -u -o > /dev/null
-view ../sorted/compressed/sorteduncomp.bam -u -o > /dev/null
-view ../sorted/compressed/sortedzlib1.bam -u -o > /dev/null
-view ../sorted/compressed/sortedzlib6.bam -u -o > /dev/null
-view ../sorted/compressed/sortedzlibng1.bam -u -o > /dev/null
-view ../sorted/compressed/sortedzlibng6.bam -u -o > /dev/null
-view ../sorted/compressed/sortedzopfli1.bam -u -o > /dev/null
-view ../sorted/compressed/sortedzopfli6.bam -u -o > /dev/null
+view ../sorted/compressed/sorted.bam -u -o - > /dev/null
+view ../sorted/compressed/sortedigzip1.bam -u -o - > /dev/null
+view ../sorted/compressed/sortedigzip3.bam -u -o - > /dev/null
+view ../sorted/compressed/sortedlibdeflate1.bam -u -o - > /dev/null
+view ../sorted/compressed/sortedlibdeflate6.bam -u -o - > /dev/null
+view ../sorted/compressed/sortedminiz1.bam -u -o - > /dev/null
+view ../sorted/compressed/sortedminiz6.bam -u -o - > /dev/null
+view ../sorted/compressed/sortedslz1.bam -u -o - > /dev/null
+view ../sorted/compressed/sorteduncomp.bam -u -o - > /dev/null
+view ../sorted/compressed/sortedzlib1.bam -u -o - > /dev/null
+view ../sorted/compressed/sortedzlib6.bam -u -o - > /dev/null
+view ../sorted/compressed/sortedzlibng1.bam -u -o - > /dev/null
+view ../sorted/compressed/sortedzlibng6.bam -u -o - > /dev/null
+view ../sorted/compressed/sortedzopfli1.bam -u -o - > /dev/null
+view ../sorted/compressed/sortedzopfli6.bam -u -o - > /dev/null
