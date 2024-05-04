@@ -14,12 +14,13 @@ colorslist = [
     "#377eb8",
 ]
 
+plt.rcParams.update({"font.family": "serif", "font.serif": []})
+
 
 df = pd.read_csv("/home/dominik/ba/compressionComparison.csv")
 fig, ax = plt.subplots(figsize=(4.804, 3))
 plt.rcParams.update({"font.family": "serif", "font.serif": []})
 
-plt.rcParams.update({"font.family": "serif", "font.serif": []})
 
 df = df.sort_values("size", ascending=False)
 # Plot on ax
