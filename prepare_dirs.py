@@ -19,6 +19,8 @@ def make_unambigous():
             out_line = line
             if "-o" in line:
                 output_dir = os.path.dirname(line.split("-o")[1].strip().split(" ")[0])
+                if output_dir == "-":
+                    continue
                 start_dir = output_dir
                 while output_dir in prev_dirs:
                     print(
