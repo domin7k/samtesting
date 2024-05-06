@@ -99,6 +99,10 @@ parser.add_argument(
     help="plot the speedup instead of the execution time",
 )
 
+parser.add_argument(
+    "-yheight", dest="hight", default=4.0, type=float, help="hight of the plot"
+)
+
 
 args = parser.parse_args()
 
@@ -114,7 +118,7 @@ def extractParam(param_string):
 df_avgs = []
 df_mins = []
 df_maxs = []
-plt.figure(figsize=(4.804, 4))
+plt.figure(figsize=(4.804, args.hight))
 plt.rcParams.update({"font.family": "serif", "font.serif": []})
 
 print(args.filename2)
