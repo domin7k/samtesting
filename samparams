@@ -1,15 +1,5 @@
-view ../sorted/compressed2/sorted.bam -u > /dev/null
-view ../sorted/compressed2/sortedigzip1.bam -u > /dev/null
-view ../sorted/compressed2/sortedigzip3.bam -u > /dev/null
-view ../sorted/compressed2/sortedlibdeflate1.bam -u > /dev/null
-view ../sorted/compressed2/sortedlibdeflate6.bam -u > /dev/null
-view ../sorted/compressed2/sortedminiz1.bam -u > /dev/null
-view ../sorted/compressed2/sortedminiz6.bam -u > /dev/null
-view ../sorted/compressed2/sortedslz1.bam -u > /dev/null
-view ../sorted/compressed2/sorteduncomp.bam -u > /dev/null
-view ../sorted/compressed2/sortedzlib1.bam -u > /dev/null
-view ../sorted/compressed2/sortedzlib6.bam -u > /dev/null
-view ../sorted/compressed2/sortedzlibng1.bam -u > /dev/null
-view ../sorted/compressed2/sortedzlibng6.bam -u > /dev/null
-view ../sorted/compressed2/sortedzopfli1.bam -u > /dev/null
-view ../sorted/compressed2/sortedzopfli6.bam -u > /dev/null
+sort -@ 1 -m 48G -l 0 ../unsorted_bam_files/tenpercent.bam | pv -f > /dev/null  
+sort -@ 2 -m 24G -l 0 ../unsorted_bam_files/tenpercent.bam | pv -f > /dev/null 
+sort -@ 4 -m 12G -l 0 ../unsorted_bam_files/tenpercent.bam | pv -f > /dev/null  
+sort -@ 8 -m 6G -l 0 ../unsorted_bam_files/tenpercent.bam  | pv -f > /dev/null
+sort -@ 16 -m 3G -l 0 ../unsorted_bam_files/tenpercent.bam | pv -f > /dev/null
