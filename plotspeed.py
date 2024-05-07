@@ -206,18 +206,20 @@ for no, file in enumerate([item for row in args.filename2 for item in row]):
 
 speedup_values = []
 if args.speedup:
-    speedup_values = df_avgs[1][args.time].to_numpy() / df_avgs[0][args.time].to_numpy()
-    plt.plot(
-        range(len(df_avgs[0][args.time])),
-        speedup_values,
-        marker="o",
-        fillstyle="none",
-        label=(
-            (args.desciption2[0][0] + "/" + args.desciption2[0][0])
-            if args.desciption2
-            else None
-        ),
-    )
+    plt.gca().axhline(1, linestyle="--", color="r", linewidth=0.5)
+    for numberofdf, df_avg in enumerate(df_avgs[1:]):
+        speedup_values = df_avgs[0][args.time].to_numpy() / df_avg[args.time].to_numpy()
+        plt.plot(
+            range(len(df_avgs[0][args.time])),
+            speedup_values,
+            marker="o",
+            fillstyle="none",
+            label=(
+                args.desciption2[numberofdf + 1][0]
+                if not "+ Libdeflate" in args.desciption2[numberofdf + 1][0]
+                else "igzip Level 1 +\nLibdeflate Decompression"
+            ),
+        )
 
 
 # Add labels and title
@@ -238,17 +240,19 @@ else:
         if args.title
         else f"Speedup vs {args.paramname if args.paramname else param}"
     )
-    # set yticks to percent
-    plt.gca().yaxis.set_major_formatter(ticker.PercentFormatter(xmax=1))
-    for i, v in enumerate(speedup_values):
-        plt.annotate(
-            f"{v:.2%}",
-            xy=(i, v),
-            xytext=(0, -7),
-            textcoords="offset points",
-            ha="center",
-            va="top",
-        )
+    plt.gca().yaxis.set_major_formatter(ticker.FuncFormatter(lambda x, _: f"{x:.1f}"))
+
+    # # set yticks to percent
+    # plt.gca().yaxis.set_major_formatter(ticker.PercentFormatter(xmax=1))
+    # for i, v in enumerate(speedup_values):
+    #     plt.annotate(
+    #         f"{v:.2%}",
+    #         xy=(i, v),
+    #         xytext=(0, -7),
+    #         textcoords="offset points",
+    #         ha="center",
+    #         va="top",
+    #     )
 
 
 # Set xticks

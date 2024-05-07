@@ -1,5 +1,5 @@
-sort -l 1 -@ 1 -m 48G ../unsorted_bam_files/tenpercent.bam | pv -f > /dev/null  
-sort -l 1 -@ 2 -m 24G ../unsorted_bam_files/tenpercent.bam | pv -f > /dev/null 
-sort -l 1 -@ 4 -m 12G ../unsorted_bam_files/tenpercent.bam | pv -f > /dev/null  
-sort -l 1 -@ 8 -m 6G ../unsorted_bam_files/tenpercent.bam  | pv -f > /dev/null
-sort -l 1 -@ 16 -m 3G ../unsorted_bam_files/tenpercent.bam | pv -f > /dev/null
+sort -@ 1 -m 48G ../unsorted_bam_files/onepercent.bam | pv -f > /dev/null  
+sort -@ 2 -m 24G ../unsorted_bam_files/onepercent.bam | pv -f > /dev/null 
+sort -@ 4 -m 12G ../unsorted_bam_files/onepercent.bam | pv -f > /dev/null  
+sort -@ 8 -m 6G ../unsorted_bam_files/onepercent.bam  | pv -f > /dev/null
+sort -@ 16 -m 3G ../unsorted_bam_files/onepercent.bam | pv -f > /dev/null
