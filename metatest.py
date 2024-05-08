@@ -9,7 +9,7 @@ methods = {
     "libdeflate": [1, 6],
     "zlibng": [1, 6],
     "igzip": [1, 3],
-    "zopfli": [1, 6],
+    # "zopfli": [1, 6],
     # "cryptopp": [1, 6],
 }
 
