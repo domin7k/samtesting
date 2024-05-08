@@ -15,7 +15,7 @@ methods = {
 
 for method in methods.keys():
     for i in range(2):
-        subprocess.run("python3 setup.py", shell=True)
+        # subprocess.run("python3 setup.py", shell=True)
         name = method + str(methods[method][i])
         subprocess.run(
             "python3 tests.py 3 -d "
