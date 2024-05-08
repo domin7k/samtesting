@@ -20,6 +20,7 @@ for method in methods.keys():
         subprocess.run(
             "python3 tests.py 3 -d "
             + name
+            + "BigFile"
             + ' -ld "BGZF_METHOD='
             + name
             + ' LD_PRELOAD=/home/extsiebe/siebelt/7bgzf/7bgzf.so "',
