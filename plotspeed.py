@@ -134,11 +134,13 @@ for no, file in enumerate([item for row in args.filename2 for item in row]):
 
     df_min = df.groupby(["params", "branch"], as_index=False)[args.time].min()
     df_max = df.groupby(["params", "branch"], as_index=False)[args.time].max()
+    df_stf = df.groupby(["params", "branch"], as_index=False)[args.time].std()
     print(avg)
 
     avg[param] = avg["params"].apply(extractParam)
     df_max[param] = df_max["params"].apply(extractParam)
     df_min[param] = df_min["params"].apply(extractParam)
+    df_stf[param] = df_stf["params"].apply(extractParam)
 
     avg[param] = avg[param].apply(
         lambda x: (
@@ -155,49 +157,59 @@ for no, file in enumerate([item for row in args.filename2 for item in row]):
             x if not (x.endswith("M") or x.endswith("G")) else x.strip("M").strip("G")
         )
     )
+    df_stf[param] = df_stf[param].apply(
+        lambda x: (
+            x if not (x.endswith("M") or x.endswith("G")) else x.strip("M").strip("G")
+        )
+    )
 
     avg[param] = avg[param].apply(pd.to_numeric, errors="coerce")
     df_max[param] = df_max[param].apply(pd.to_numeric, errors="coerce")
     df_min[param] = df_min[param].apply(pd.to_numeric, errors="coerce")
+    df_stf[param] = df_stf[param].apply(pd.to_numeric, errors="coerce")
 
     avg = avg.sort_values(by=[param])
     df_max = df_max.sort_values(by=[param])
     df_min = df_min.sort_values(by=[param])
+    df_stf = df_stf.sort_values(by=[param])
 
     if not args.speedup:
-        if not df_min.equals(df_max):
-            # Plot the execution time against the 'mem' column
-            plt.fill_between(
-                x=range(len(avg[args.time])),
-                y1=df_min[args.time].to_numpy(),
-                y2=df_max[args.time].to_numpy(),
-                alpha=0.20,
-                color=colorslist[no],
-            )
+        # if not df_min.equals(df_max):
+        #     # Plot the execution time against the 'mem' column
+        #     plt.fill_between(
+        #         x=range(len(avg[args.time])),
+        #         y1=df_min[args.time].to_numpy(),
+        #         y2=df_max[args.time].to_numpy(),
+        #         alpha=0.20,
+        #         color=colorslist[no],
+        #     )
 
-            plt.plot(
-                range(len(avg[args.time])),
-                df_max[args.time].to_numpy(),
-                marker=7,
-                fillstyle="none",
-                lw=0,
-                color=colorslist[no],
-            )
-            plt.plot(
-                range(len(avg[args.time])),
-                df_min[args.time].to_numpy(),
-                marker=6,
-                fillstyle="none",
-                lw=0,
-                color=colorslist[no],
-            )
-        plt.plot(
+        #     plt.plot(
+        #         range(len(avg[args.time])),
+        #         df_max[args.time].to_numpy(),
+        #         marker=7,
+        #         fillstyle="none",
+        #         lw=0,
+        #         color=colorslist[no],
+        #     )
+        #     plt.plot(
+        #         range(len(avg[args.time])),
+        #         df_min[args.time].to_numpy(),
+        #         marker=6,
+        #         fillstyle="none",
+        #         lw=0,
+        #         color=colorslist[no],
+        #     )
+        plt.errorbar(
             range(len(avg[args.time])),
             avg[args.time].to_numpy(),
+            yerr=df_stf[args.time].to_numpy(),
             marker="o",
             fillstyle="none",
             color=colorslist[no],
             label=((args.desciption2[no][0]) if args.desciption2 else None),
+            ecolor="black",
+            capsize=2,
         )
     else:
         df_mins.append(df_min)
