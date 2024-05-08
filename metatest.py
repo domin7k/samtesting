@@ -9,7 +9,7 @@ methods = {
     "libdeflate": [1, 6],
     "zlibng": [1, 6],
     "igzip": [1, 3],
-    # "zopfli": [1, 6],
+    "zopfli": [1, 6],
     # "cryptopp": [1, 6],
 }
 
@@ -20,7 +20,7 @@ for method in methods.keys():
         subprocess.run(
             "python3 tests.py 3 -d "
             + name
-            + "BigFile"
+            + "smallFile"
             + ' -ld "BGZF_METHOD='
             + name
             + ' LD_PRELOAD=/home/extsiebe/siebelt/7bgzf/7bgzf.so "',
