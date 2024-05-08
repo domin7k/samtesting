@@ -99,6 +99,14 @@ parser.add_argument(
     help="plot the speedup instead of the execution time",
 )
 
+# add argument to indicate if speedup should be plotted
+parser.add_argument(
+    "-r",
+    dest="relative",
+    action="store_true",
+    help="plot the speedup to first core",
+)
+
 parser.add_argument(
     "-yheight", dest="hight", default=4.0, type=float, help="hight of the plot"
 )
@@ -173,7 +181,7 @@ for no, file in enumerate([item for row in args.filename2 for item in row]):
     df_min = df_min.sort_values(by=[param])
     df_stf = df_stf.sort_values(by=[param])
 
-    if not args.speedup:
+    if not args.speedup and not args.relative:
         # if not df_min.equals(df_max):
         #     # Plot the execution time against the 'mem' column
         #     plt.fill_between(
@@ -233,6 +241,17 @@ if args.speedup:
             ),
         )
 
+if args.relative:
+    for numberofdf, df_avg in enumerate(df_avgs):
+        speedup_values = df_avg[args.time].to_numpy()[0] / df_avg[args.time].to_numpy()
+        print("speedup" + str(speedup_values))
+        plt.plot(
+            range(len(df_avg[args.time])),
+            speedup_values,
+            marker="o",
+            fillstyle="none",
+            label=(args.desciption2[numberofdf][0]),
+        )
 
 # Add labels and title
 plt.xlabel(args.paramname if args.paramname else param)
