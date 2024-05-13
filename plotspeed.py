@@ -234,11 +234,7 @@ if args.speedup:
             speedup_values,
             marker="o",
             fillstyle="none",
-            label=(
-                args.desciption2[numberofdf + 1][0]
-                if not "+ Libdeflate" in args.desciption2[numberofdf + 1][0]
-                else "igzip Level 1 +\nLibdeflate Decompression"
-            ),
+            label=(args.desciption2[numberofdf + 1][0].replace("\\n", "\n")),
         )
 
 if args.relative:
@@ -250,7 +246,7 @@ if args.relative:
             speedup_values,
             marker="o",
             fillstyle="none",
-            label=(args.desciption2[numberofdf][0]),
+            label=(args.desciption2[numberofdf][0]).replace("\\n", "\n"),
         )
 
 # Add labels and title
