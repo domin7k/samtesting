@@ -2,7 +2,25 @@ from matplotlib import pyplot as plt
 import pandas as pd
 import re
 
-fig, axs = plt.subplots(5, 2, figsize=(4.804, 8))
+plt.rcParams.update({"font.family": "serif", "font.serif": []})
+
+fig, axs = plt.subplots(
+    5,
+    2,
+    figsize=(4.804, 6.5),
+    gridspec_kw={
+        "hspace": 0.3,
+        "wspace": 0.25,
+        "top": 0.95,
+        "bottom": 0.05,
+        "left": 0.1,
+        "right": 0.95,
+    },
+)
+
+fig.text(0.5, 0.001, "Number of Threads", ha="center")
+fig.text(0.001, 0.5, "Relative Time", va="center", rotation="vertical")
+
 directories = [
     "2024-05-09T09:41:50.963904igzip3smallFile",
     "2024-05-09T09:36:10.255986igzip1smallFile",
@@ -42,7 +60,7 @@ for i, directory in enumerate(directories):
 
 for i, directory in enumerate(sorted(directories, key=lambda x: dirs[x])):
     df = pd.read_csv(f"/home/dominik/fusessh/{directory}/fileinfo.csv")
-    df = df[df["run_counter"] == 0]
+    df = df[df["run_counter"] == 1]
     times_dict = {}
     for params in df["params"].unique():
         df_params = df[df["params"] == params]
@@ -145,7 +163,8 @@ for i, directory in enumerate(sorted(directories, key=lambda x: dirs[x])):
     )
     number = re.findall(r"\d+", directory)[-1]
     directory_name = directory_name + f" ({number})"
-    ax.set_title(directory_name)
+    # ax.set_title(directory_name, y=1.0, pad=-20)
+    ax.legend([], [], title=directory_name, loc="upper center")
 
 # plot a legend with the same colors as the plot
 axs[4, 1].fill_between([], [], color="#377eb8", label="Decompression Time")
@@ -154,5 +173,6 @@ axs[4, 1].fill_between([], [], color="#e41a1c", label="Compression Time")
 axs[4, 1].legend(loc="lower right")
 axs[4, 1].axis("off")
 
-plt.tight_layout()
+fig.suptitle("Relative Execution Times")
+
 plt.show()

@@ -111,10 +111,18 @@ parser.add_argument(
     "-yheight", dest="hight", default=4.0, type=float, help="hight of the plot"
 )
 
+parser.add_argument(
+    "-ylim", dest="ylim", default=0, type=float, help="ylim of the plot"
+)
+
+parser.add_argument("-ncols", dest="ncols", default=1, type=int, help="ncols of legend")
+
 
 args = parser.parse_args()
 
 param = args.param
+if len([item for row in args.filename2 for item in row]) > 10:
+    colorslist = matplotlib.cm.tab20.colors
 
 
 def extractParam(param_string):
@@ -128,6 +136,7 @@ df_mins = []
 df_maxs = []
 plt.figure(figsize=(4.804, args.hight))
 plt.rcParams.update({"font.family": "serif", "font.serif": []})
+max_values = []
 
 print(args.filename2)
 print(args.desciption2)
@@ -181,6 +190,8 @@ for no, file in enumerate([item for row in args.filename2 for item in row]):
     df_min = df_min.sort_values(by=[param])
     df_stf = df_stf.sort_values(by=[param])
 
+    max_values.append([avg[args.time][0], no])
+
     if not args.speedup and not args.relative:
         # if not df_min.equals(df_max):
         #     # Plot the execution time against the 'mem' column
@@ -227,14 +238,14 @@ for no, file in enumerate([item for row in args.filename2 for item in row]):
 speedup_values = []
 if args.speedup:
     plt.gca().axhline(1, linestyle="--", color="r", linewidth=0.5)
-    for numberofdf, df_avg in enumerate(df_avgs[1:]):
+    for numberofdf, df_avg in enumerate(df_avgs):
         speedup_values = df_avgs[0][args.time].to_numpy() / df_avg[args.time].to_numpy()
         plt.plot(
             range(len(df_avgs[0][args.time])),
             speedup_values,
             marker="o",
             fillstyle="none",
-            label=(args.desciption2[numberofdf + 1][0].replace("\\n", "\n")),
+            label=(args.desciption2[numberofdf][0].replace("\\n", "\n")),
         )
 
 if args.relative:
@@ -252,8 +263,10 @@ if args.relative:
 # Add labels and title
 plt.xlabel(args.paramname if args.paramname else param)
 plt.ylim(bottom=0)
+if args.ylim > 0:
+    plt.ylim(top=args.ylim)
 
-if not args.speedup:
+if not args.speedup and not args.relative:
     plt.ylabel(args.yaxis)
     plt.title(
         args.title
@@ -265,7 +278,11 @@ else:
     plt.title(
         args.title
         if args.title
-        else f"Speedup vs {args.paramname if args.paramname else param}"
+        else (
+            f"Speedup vs {args.paramname if args.paramname else param}"
+            if args.speedup
+            else f"Speedup Compared to Single Core Performance"
+        )
     )
     plt.gca().yaxis.set_major_formatter(ticker.FuncFormatter(lambda x, _: f"{x:.1f}"))
 
@@ -286,7 +303,16 @@ else:
 plt.xticks(range(len(avg[args.time])), avg[param])
 
 if args.desciption2:
-    plt.legend()
+    handles, labels = plt.gca().get_legend_handles_labels()
+    if not args.speedup:
+        order = [a[1] for a in sorted(max_values, key=lambda x: x[0], reverse=True)]
+    else:
+        order = [a[1] for a in sorted(max_values, key=lambda x: x[0], reverse=False)]
+    plt.legend(
+        [handles[idx] for idx in order],
+        [labels[idx] for idx in order],
+        ncol=args.ncols,
+    )
 plt.tight_layout()
 
 if args.save:

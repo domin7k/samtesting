@@ -4,10 +4,10 @@ import re
 
 
 df = pd.read_csv(
-    "/home/dominik/fusessh/2024-05-05T00:29:12.196528singleCoreLibdeflateUncompression/results.csv"
+    "/home/dominik/fusessh/2024-05-14T19:47:20.295867decompressionLibdeflate3Times/results.csv"
 )
 df2 = pd.read_csv(
-    "/home/dominik/fusessh/2024-05-05T11:55:18.924287singleCoreZlibUncompression/results.csv"
+    "/home/dominik/fusessh/2024-05-14T15:05:49.083200decompressionZlib3times/results.csv"
 )
 
 df = df[~df["params"].str.contains("sorted.bam")]
@@ -16,9 +16,12 @@ df2 = df2[~df2["params"].str.contains("sorted.bam")]
 
 avg = df.groupby(["params", "branch"], as_index=False)["execution_time"].mean()
 avg = avg.sort_values(by=["execution_time"])
+std = df.groupby(["params", "branch"], as_index=False)["execution_time"].std()
+std = std.sort_values(by=["execution_time"])
 
 avg2 = df2.groupby(["params", "branch"], as_index=False)["execution_time"].mean()
 avg2 = avg2.sort_values(by=["execution_time"])
+std2 = df2.groupby(["params", "branch"], as_index=False)["execution_time"].std()
 
 fig = plt.figure(figsize=(4.804, 3))
 plt.rcParams.update({"font.family": "serif", "font.serif": []})
@@ -34,32 +37,10 @@ params2 = [
 
 # Sort avg2 and params2 based on the order of params in avg
 avg2_sorted = avg2.reindex(avg["params"].index)
+std_sorted = std.reindex(avg["params"].index)
+std2_sorted = std2.reindex(avg["params"].index)
 params2_sorted = [params2[i] for i in avg["params"].index]
-plt.bar(
-    [p + 0.2 for p in range(len(params2_sorted))],
-    avg2_sorted["execution_time"],
-    label="zlib",
-    width=0.4,
-    color="#009dae",
-    # "#e41a1c",
-    # "#e41a1c",
-    # "#f781bf",
-    # "#a65628",
-    # "#4daf4a",
-    # "#984ea3",
-    # "#999999",
-    # "#dede00",
-    # "#377eb8",
-)
-plt.bar(
-    [p - 0.2 for p in range(len(params))],
-    avg["execution_time"],
-    label="libdeflate",
-    width=0.4,
-)
 
-
-plt.xticks(range(len(params)), params, rotation=35, ha="right", rotation_mode="anchor")
 plt.hlines(
     avg2["execution_time"].mean(),
     -1,
@@ -76,6 +57,51 @@ plt.hlines(
     linestyles="dashed",
     colors="#377eb8",
 )
+
+plt.bar(
+    [p + 0.2 for p in range(len(params2_sorted))],
+    avg2_sorted["execution_time"],
+    label="zlib",
+    width=0.4,
+    color="#009dae",
+    # "#e41a1c",
+    # "#e41a1c",
+    # "#f781bf",
+    # "#a65628",
+    # "#4daf4a",
+    # "#984ea3",
+    # "#999999",
+    # "#dede00",
+    # "#377eb8",
+)
+plt.errorbar(
+    [p + 0.2 for p in range(len(params2_sorted))],
+    avg2_sorted["execution_time"],
+    yerr=std2_sorted["execution_time"],
+    fmt="None",
+    ecolor="black",
+    capsize=2,
+    lw=0.5,
+)
+plt.bar(
+    [p - 0.2 for p in range(len(params))],
+    avg["execution_time"],
+    label="libdeflate",
+    width=0.4,
+)
+plt.errorbar(
+    [p - 0.2 for p in range(len(params))],
+    avg["execution_time"],
+    yerr=std["execution_time"],
+    fmt="None",
+    ecolor="black",
+    capsize=2,
+    lw=0.5,
+)
+
+
+plt.xticks(range(len(params)), params, rotation=35, ha="right", rotation_mode="anchor")
+
 
 plt.title("Decompression Performance")
 plt.ylabel("Execution Time (s)")
