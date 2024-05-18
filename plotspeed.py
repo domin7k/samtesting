@@ -136,6 +136,7 @@ df_mins = []
 df_maxs = []
 plt.figure(figsize=(4.804, args.hight))
 plt.rcParams.update({"font.family": "serif", "font.serif": []})
+plt.rcParams.update({"font.size": 9})
 max_values = []
 
 print(args.filename2)
@@ -147,19 +148,19 @@ for no, file in enumerate([item for row in args.filename2 for item in row]):
 
     df = pd.read_csv(file)
 
-    avg = df.groupby(["params", "branch"], as_index=False)[args.time].mean()
+    median = df.groupby(["params", "branch"], as_index=False)[args.time].median()
 
     df_min = df.groupby(["params", "branch"], as_index=False)[args.time].min()
     df_max = df.groupby(["params", "branch"], as_index=False)[args.time].max()
     df_stf = df.groupby(["params", "branch"], as_index=False)[args.time].std()
-    print(avg)
+    print(median)
 
-    avg[param] = avg["params"].apply(extractParam)
+    median[param] = median["params"].apply(extractParam)
     df_max[param] = df_max["params"].apply(extractParam)
     df_min[param] = df_min["params"].apply(extractParam)
     df_stf[param] = df_stf["params"].apply(extractParam)
 
-    avg[param] = avg[param].apply(
+    median[param] = median[param].apply(
         lambda x: (
             x if not (x.endswith("M") or x.endswith("G")) else x.strip("M").strip("G")
         )
@@ -180,17 +181,17 @@ for no, file in enumerate([item for row in args.filename2 for item in row]):
         )
     )
 
-    avg[param] = avg[param].apply(pd.to_numeric, errors="coerce")
+    median[param] = median[param].apply(pd.to_numeric, errors="coerce")
     df_max[param] = df_max[param].apply(pd.to_numeric, errors="coerce")
     df_min[param] = df_min[param].apply(pd.to_numeric, errors="coerce")
     df_stf[param] = df_stf[param].apply(pd.to_numeric, errors="coerce")
 
-    avg = avg.sort_values(by=[param])
+    median = median.sort_values(by=[param])
     df_max = df_max.sort_values(by=[param])
     df_min = df_min.sort_values(by=[param])
     df_stf = df_stf.sort_values(by=[param])
 
-    max_values.append([avg[args.time][0], no])
+    max_values.append([median[args.time][0], no])
 
     if not args.speedup and not args.relative:
         # if not df_min.equals(df_max):
@@ -220,8 +221,8 @@ for no, file in enumerate([item for row in args.filename2 for item in row]):
         #         color=colorslist[no],
         #     )
         plt.errorbar(
-            range(len(avg[args.time])),
-            avg[args.time].to_numpy(),
+            range(len(median[args.time])),
+            median[args.time].to_numpy(),
             yerr=df_stf[args.time].to_numpy(),
             marker="o",
             fillstyle="none",
@@ -233,19 +234,35 @@ for no, file in enumerate([item for row in args.filename2 for item in row]):
     else:
         df_mins.append(df_min)
         df_maxs.append(df_max)
-        df_avgs.append(avg)
+        df_avgs.append(median)
 
 speedup_values = []
 if args.speedup:
     plt.gca().axhline(1, linestyle="--", color="r", linewidth=0.5)
     for numberofdf, df_avg in enumerate(df_avgs):
         speedup_values = df_avgs[0][args.time].to_numpy() / df_avg[args.time].to_numpy()
-        plt.plot(
-            range(len(df_avgs[0][args.time])),
+        speedup_max = (
+            df_avgs[0][args.time].to_numpy() / df_mins[numberofdf][args.time].to_numpy()
+        )
+        speedup_min = (
+            df_avgs[0][args.time].to_numpy() / df_maxs[numberofdf][args.time].to_numpy()
+        )
+        # plt.plot(
+        #     range(len(df_avgs[0][args.time])),
+        #     speedup_values,
+        #     # marker="o",
+        #     fillstyle="none",
+        #     label=(args.desciption2[numberofdf][0].replace("\\n", "\n")),
+        # )
+        plt.errorbar(
+            range(len(df_avg[args.time])),
             speedup_values,
+            yerr=[speedup_values - speedup_min, speedup_max - speedup_values],
             marker="o",
             fillstyle="none",
+            color=colorslist[numberofdf],
             label=(args.desciption2[numberofdf][0].replace("\\n", "\n")),
+            capsize=2,
         )
 
 if args.relative:
@@ -300,7 +317,7 @@ else:
 
 
 # Set xticks
-plt.xticks(range(len(avg[args.time])), avg[param])
+plt.xticks(range(len(median[args.time])), median[param])
 
 if args.desciption2:
     handles, labels = plt.gca().get_legend_handles_labels()

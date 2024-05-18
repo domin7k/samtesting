@@ -21,14 +21,18 @@ parser.add_argument("input", type=str, help="The input file")
 args = parser.parse_args()
 
 plt.rcParams.update({"font.family": "serif", "font.serif": []})
+plt.rcParams.update({"font.size": 9})
 
 
 df = pd.read_csv(args.input)
-fig, ax = plt.subplots(figsize=(4.804, 4))
+fig, ax = plt.subplots(figsize=(4.804, 3.2))
 plt.rcParams.update({"font.family": "serif", "font.serif": []})
+plt.rcParams.update({"font.size": 9})
+
 
 ax2 = ax.twinx()
 plt.rcParams.update({"font.family": "serif", "font.serif": []})
+plt.rcParams.update({"font.size": 9})
 
 
 # Plot on ax
@@ -51,15 +55,15 @@ ax.set_yticklabels(["{:.0%}".format(x) for x in ax.get_yticks()])
 
 # Plot on ax2
 cont2 = ax2.bar(df["level"], df["size"], color=colorslist, alpha=0)
-barlabels = plt.bar_label(
-    cont2,
-    fmt="{:.1f}GiB",
-    fontsize=8,
-    label_type="edge",
-    padding=2,
-    rotation=45,
-)
-barlabels[0].set_rotation(0)
+# barlabels = plt.bar_label(
+#     cont2,
+#     fmt="{:.1f}GiB",
+#     fontsize=8,
+#     label_type="edge",
+#     padding=2,
+#     rotation=45,
+# )
+# barlabels[0].set_rotation(0)
 ax2.set_ylabel("Actual Size (GiB)")
 
 plt.tight_layout()
@@ -75,7 +79,7 @@ ax2.autoscale(enable=True)
 # plt.show()
 
 print(df)
-fig = plt.figure(figsize=(4.804, 4))
+fig = plt.figure(figsize=(4.804, 3.8))
 ax = fig.add_subplot()
 
 plt.plot(
@@ -97,14 +101,14 @@ for l in range(1, 10):
 
 plt.legend(ncol=2)
 plt.xlabel("Number of Threads")
-plt.ylabel("Output Rate (MiB/s)")
+plt.ylabel("Throughput [MiB/s]")
 plt.xticks(range(5), [1, 2, 4, 8, 16])
 plt.ylim(bottom=0, top=400)
-plt.title("Compression Speed at Different Levels")
+plt.title("Compression Troughput at Different Levels")
 plt.tight_layout()
 
 
-inset = inset_axes(ax, width=1.3, height=1, loc=3, bbox_to_anchor=(70, 130))
+inset = inset_axes(ax, width=1.3, height=1, loc=3, bbox_to_anchor=(65, 130))
 for l in range(0, 10):
     plt.plot(
         range(5),
