@@ -106,7 +106,7 @@ def runSam(result_dir: str, run_counter=0, preargs=""):
 
         if not "sambamba" in line:
             result = subprocess.run(
-                preargs + "../samtools/samtools " + " ".join(params),
+                preargs + "samtools " + " ".join(params),
                 stdout=subprocess.PIPE,
                 stderr=subprocess.PIPE,
                 shell=True,
