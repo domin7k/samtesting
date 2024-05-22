@@ -6,8 +6,10 @@ import pandas as pd
 import matplotlib.pyplot as plt
 from matplotlib import ticker
 
+from helpers.formating import HumanBytes
 
-PARAM = "-l"
+
+PARAM = "unsorted_bam_files/"
 
 colorslist = [
     "#377eb8",
@@ -80,7 +82,7 @@ parser.add_argument(
     dest="yaxis",
     type=str,
     help="title of the yaxis",
-    default="Execution Time [s]",
+    default="Execution Time [m]",
 )
 
 parser.add_argument(
@@ -153,33 +155,39 @@ for no, file in enumerate([item for row in args.filename2 for item in row]):
     df_min = df.groupby(["params", "branch"], as_index=False)[args.time].min()
     df_max = df.groupby(["params", "branch"], as_index=False)[args.time].max()
     df_stf = df.groupby(["params", "branch"], as_index=False)[args.time].std()
-    print(median)
 
     median[param] = median["params"].apply(extractParam)
     df_max[param] = df_max["params"].apply(extractParam)
     df_min[param] = df_min["params"].apply(extractParam)
     df_stf[param] = df_stf["params"].apply(extractParam)
 
-    median[param] = median[param].apply(
-        lambda x: (
-            x if not (x.endswith("M") or x.endswith("G")) else x.strip("M").strip("G")
-        )
-    )
-    df_max[param] = df_max[param].apply(
-        lambda x: (
-            x if not (x.endswith("M") or x.endswith("G")) else x.strip("M").strip("G")
-        )
-    )
-    df_min[param] = df_min[param].apply(
-        lambda x: (
-            x if not (x.endswith("M") or x.endswith("G")) else x.strip("M").strip("G")
-        )
-    )
-    df_stf[param] = df_stf[param].apply(
-        lambda x: (
-            x if not (x.endswith("M") or x.endswith("G")) else x.strip("M").strip("G")
-        )
-    )
+    def replacePercentages(input_string):
+        print(input_string)
+        sizeList = [
+            2430911988,
+            11915810774,
+            23610152212,
+            115885627243,
+            230919299324,
+        ]
+        for i, find in enumerate(
+            [
+                "onepercent.bam",
+                "fivepercent.bam",
+                "tenpercent.bam",
+                "fiftypercent.bam",
+                "ocopy.bam",
+            ]
+        ):
+            if find in input_string:
+                print(f"Found {find} in {input_string}")
+                return sizeList[i]
+        return input_string
+
+    median[param] = median[param].apply(lambda x: replacePercentages(x))
+    df_max[param] = df_max[param].apply(lambda x: replacePercentages(x))
+    df_min[param] = df_min[param].apply(lambda x: replacePercentages(x))
+    df_stf[param] = df_stf[param].apply(lambda x: replacePercentages(x))
 
     median[param] = median[param].apply(pd.to_numeric, errors="coerce")
     df_max[param] = df_max[param].apply(pd.to_numeric, errors="coerce")
@@ -192,6 +200,8 @@ for no, file in enumerate([item for row in args.filename2 for item in row]):
     df_stf = df_stf.sort_values(by=[param])
 
     max_values.append([median[args.time][0], no])
+
+    print(median)
 
     if not args.speedup and not args.relative:
         # if not df_min.equals(df_max):
@@ -221,7 +231,7 @@ for no, file in enumerate([item for row in args.filename2 for item in row]):
         #         color=colorslist[no],
         #     )
         plt.errorbar(
-            range(len(median[args.time])),
+            median[param].to_numpy(),
             median[args.time].to_numpy(),
             yerr=[
                 median[args.time].to_numpy() - df_min[args.time].to_numpy(),
@@ -257,7 +267,7 @@ if args.speedup:
         #     label=(args.desciption2[numberofdf][0].replace("\\n", "\n")),
         # )
         plt.errorbar(
-            range(len(df_avg[args.time])),
+            df_avg[param].to_numpy(),
             speedup_values,
             yerr=[speedup_values - speedup_min, speedup_max - speedup_values],
             marker="o",
@@ -292,6 +302,10 @@ if not args.speedup and not args.relative:
         if args.title
         else f"Execution Time vs {args.paramname if args.paramname else param}"
     )
+    # use minutes on y axis
+    plt.gca().yaxis.set_major_formatter(
+        ticker.FuncFormatter(lambda x, _: f"{x/60:.0f}")
+    )
 else:
     plt.ylabel("Speedup")
     plt.title(
@@ -319,7 +333,12 @@ else:
 
 
 # Set xticks
-plt.xticks(range(len(median[args.time])), median[param])
+plt.xticks(
+    median[param],
+    [HumanBytes.format(int(h))[:-4] for h in median[param].to_numpy()],
+    rotation=45,
+    ha="right",
+)
 
 if args.desciption2:
     handles, labels = plt.gca().get_legend_handles_labels()
