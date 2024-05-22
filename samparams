@@ -1,5 +1,5 @@
-sort -@ 15 -m 3276M -o ../sorted/outputOfTest/sortedbamba.bam ../unsorted_bam_files/onepercent.bam
-sort -@ 15 -m 3276M -o ../sorted/outputOfTest/sortedbamba.bam ../unsorted_bam_files/fivepercent.bam
-sort -@ 15 -m 3276M -o ../sorted/outputOfTest/sortedbamba.bam ../unsorted_bam_files/tenpercent.bam
-sort -@ 15 -m 3276M -o ../sorted/outputOfTest/sortedbamba.bam ../unsorted_bam_files/fiftypercent.bam
-sort -@ 15 -m 3276M -o ../sorted/outputOfTest/sortedbamba.bam ../unsorted_bam_files/ocopy.bam
+sort -@ 8 -m 6000M ../unsorted_bam_files/ocopy.bam -o ../sorted/outputOfTest/sorted.bam
+sort -@ 8 -m 3000M ../unsorted_bam_files/fiftypercent.bam -o ../sorted/outputOfTest_1/sorted.bam
+sort -@ 8 -m 1500M ../unsorted_bam_files/twentyfivepercent.bam -o ../sorted/outputOfTest_2/sorted.bam
+sort -@ 8 -m 600M ../unsorted_bam_files/tenpercent.bam -o ../sorted/outputOfTest_3/sorted.bam
+sort -@ 8 -m 60M ../unsorted_bam_files/onepercent.bam -o ../sorted/outputOfTest_5/sorted.bam
