@@ -8,7 +8,7 @@
 #include <sys/stat.h>
 #include <errno.h>
 
-#define FILE_SIZE (16L * 1024 * 1024 * 1024) // 16 GB
+#define FILE_SIZE (128L * 1024 * 1024 * 1024) // 16 GB
 #define BUFFER_SIZE (1024 * 1024)           // 1 MB
 #define ALIGN_SIZE (4096)                   // 4 KB alignment for direct I/O
 
