@@ -1,61 +1,87 @@
+#define _GNU_SOURCE
+#include <fcntl.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <unistd.h>
 #include <time.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <errno.h>
 
-#define FILE_SIZE (1L * 1024 * 1024 * 1024) // 1 GB
+#define FILE_SIZE (16L * 1024 * 1024 * 1024) // 16 GB
 #define BUFFER_SIZE (1024 * 1024)           // 1 MB
+#define ALIGN_SIZE (4096)                   // 4 KB alignment for direct I/O
 
 int main() {
-    FILE *file;
-    char *buffer;
-    size_t written;
-    clock_t start, end;
+    int fd;
+    void *buffer;
+    ssize_t written;
+    struct timespec start, end;
     double duration;
 
-    // Allocate 1 MB buffer
-    buffer = (char *)malloc(BUFFER_SIZE);
-    if (buffer == NULL) {
+    // Allocate aligned memory for direct I/O
+    if (posix_memalign(&buffer, ALIGN_SIZE, BUFFER_SIZE) != 0) {
         fprintf(stderr, "Memory allocation failed\n");
         return 1;
     }
 
     // Fill the buffer with random data
     for (size_t i = 0; i < BUFFER_SIZE; ++i) {
-        buffer[i] = rand() % 256;
+        ((char*)buffer)[i] = rand() % 256;
     }
 
-    // Open a file for writing
-    file = fopen("test_file.dat", "wb");
-    if (file == NULL) {
-        fprintf(stderr, "File opening failed\n");
+    // Open a file for writing with direct I/O
+    fd = open("test_file.dat", O_WRONLY | O_CREAT | O_TRUNC | O_DIRECT, 0644);
+    if (fd == -1) {
+        perror("File opening failed");
         free(buffer);
         return 1;
     }
 
-    // Start the timer
-    start = clock();
+    // Start the high-resolution timer
+    if (clock_gettime(CLOCK_MONOTONIC, &start) == -1) {
+        perror("clock_gettime start failed");
+        close(fd);
+        free(buffer);
+        return 1;
+    }
 
-    // Write 1 GB to the file
+    // Write 16 GB to the file
     for (size_t i = 0; i < FILE_SIZE / BUFFER_SIZE; ++i) {
-        written = fwrite(buffer, 1, BUFFER_SIZE, file);
+        written = write(fd, buffer, BUFFER_SIZE);
         if (written != BUFFER_SIZE) {
-            fprintf(stderr, "File write failed\n");
-            fclose(file);
+            perror("File write failed");
+            close(fd);
             free(buffer);
             return 1;
         }
     }
 
-    // Stop the timer
-    end = clock();
-    duration = (double)(end - start) / CLOCKS_PER_SEC;
+    // Ensure all data is flushed to disk
+    if (fsync(fd) == -1) {
+        perror("fsync failed");
+        close(fd);
+        free(buffer);
+        return 1;
+    }
+
+    // Stop the high-resolution timer
+    if (clock_gettime(CLOCK_MONOTONIC, &end) == -1) {
+        perror("clock_gettime end failed");
+        close(fd);
+        free(buffer);
+        return 1;
+    }
+
+    // Calculate the duration in seconds
+    duration = (end.tv_sec - start.tv_sec) + (end.tv_nsec - start.tv_nsec) / 1E9;
 
     // Close the file
-    fclose(file);
+    close(fd);
 
     // Delete the file
     if (remove("test_file.dat") != 0) {
-        fprintf(stderr, "File deletion failed\n");
+        perror("File deletion failed");
         free(buffer);
         return 1;
     }
