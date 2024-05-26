@@ -80,7 +80,7 @@ parser.add_argument(
     dest="yaxis",
     type=str,
     help="title of the yaxis",
-    default="Execution Time (s)",
+    default="Execution Time [s]",
 )
 
 parser.add_argument(
@@ -116,6 +116,7 @@ df_mins = []
 df_maxs = []
 plt.figure(figsize=(4.804, 3))
 plt.rcParams.update({"font.family": "serif", "font.serif": []})
+plt.rcParams.update({"font.size": 9})
 
 print(args.filename2)
 print(args.desciption2)
@@ -126,7 +127,7 @@ for no, file in enumerate([item for row in args.filename2 for item in row]):
 
     df = pd.read_csv(file)
 
-    avg = df.groupby(["params", "branch"], as_index=False)[args.time].mean()
+    avg = df.groupby(["params", "branch"], as_index=False)[args.time].median()
 
     df_min = df.groupby(["params", "branch"], as_index=False)[args.time].min()
     df_max = df.groupby(["params", "branch"], as_index=False)[args.time].max()
@@ -161,59 +162,23 @@ for no, file in enumerate([item for row in args.filename2 for item in row]):
     df_min = df_min.sort_values(by=[param])
 
     if not args.speedup:
-        if not df_min.equals(df_max):
-            # Plot the execution time against the 'mem' column
-            plt.fill_between(
-                x=range(len(avg[args.time])),
-                y1=df_min[args.time].to_numpy(),
-                y2=df_max[args.time].to_numpy(),
-                alpha=0.20,
-                color=colorslist[no],
-            )
-
-            plt.plot(
-                range(len(avg[args.time])),
-                df_max[args.time].to_numpy(),
-                marker=7,
-                fillstyle="none",
-                lw=0,
-                color=colorslist[no],
-            )
-            plt.plot(
-                range(len(avg[args.time])),
-                df_min[args.time].to_numpy(),
-                marker=6,
-                fillstyle="none",
-                lw=0,
-                color=colorslist[no],
-            )
-        plt.plot(
-            [i for (e, i) in enumerate(avg[param]) if e != 1],
-            [i for (e, i) in enumerate(avg[param]) if e != 1],
+        plt.errorbar(
+            avg[param],
+            avg[args.time],
+            yerr=[
+                avg[args.time].to_numpy() - df_min[args.time].to_numpy(),
+                df_max[args.time].to_numpy() - avg[args.time].to_numpy(),
+            ],
             marker="o",
             fillstyle="none",
             color=colorslist[no],
             label=((args.desciption2[no][0]) if args.desciption2 else None),
+            capsize=2,
         )
     else:
         df_mins.append(df_min)
         df_maxs.append(df_max)
         df_avgs.append(avg)
-
-speedup_values = []
-if args.speedup:
-    speedup_values = df_avgs[1][args.time].to_numpy() / df_avgs[0][args.time].to_numpy()
-    plt.plot(
-        range(len(df_avgs[0][args.time])),
-        speedup_values,
-        marker="o",
-        fillstyle="none",
-        label=(
-            (args.desciption2[0][0] + "/" + args.desciption2[0][0])
-            if args.desciption2
-            else None
-        ),
-    )
 
 
 # Add labels and title
@@ -227,31 +192,14 @@ if not args.speedup:
         if args.title
         else f"Execution Time vs {args.paramname if args.paramname else param}"
     )
-else:
-    plt.ylabel("Speedup")
-    plt.title(
-        args.title
-        if args.title
-        else f"Speedup vs {args.paramname if args.paramname else param}"
-    )
-    # set yticks to percent
-    plt.gca().yaxis.set_major_formatter(ticker.PercentFormatter(xmax=1))
-    for i, v in enumerate(speedup_values):
-        plt.annotate(
-            f"{v:.2%}",
-            xy=(i, v),
-            xytext=(0, -7),
-            textcoords="offset points",
-            ha="center",
-            va="top",
-        )
 
-sizes = ["2.3", "", "23", "54.4", "108", "215"]
+
+sizes = ["2.3", "23", "54.4", "108", "215"]
 
 # Set xticks
 plt.xticks(
-    [i for (e, i) in enumerate(avg[param]) if e != 1],
-    [str(8 * i) + ",\n" + sizes[e] for (e, i) in enumerate(avg[param]) if e != 1],
+    [i for (e, i) in enumerate(avg[param])],
+    [str(8 * i) + ",\n" + sizes[e] for (e, i) in enumerate(avg[param])],
 )
 
 # plt.gca().xaxis.get_major_ticks()[1].tick1line.set_color("red")
