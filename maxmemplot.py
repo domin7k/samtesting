@@ -80,7 +80,7 @@ parser.add_argument(
     dest="yaxis",
     type=str,
     help="title of the yaxis",
-    default="Execution Time (s)",
+    default="Execution Time [s]",
 )
 
 parser.add_argument(
@@ -161,39 +161,18 @@ for no, file in enumerate([item for row in args.filename2 for item in row]):
     df_min = df_min.sort_values(by=[param])
 
     if not args.speedup:
-        if not df_min.equals(df_max):
-            # Plot the execution time against the 'mem' column
-            plt.fill_between(
-                x=range(len(avg[args.time])),
-                y1=df_min[args.time].to_numpy(),
-                y2=df_max[args.time].to_numpy(),
-                alpha=0.20,
-                color=colorslist[no],
-            )
-
-            plt.plot(
-                range(len(avg[args.time])),
-                df_max[args.time].to_numpy(),
-                marker=7,
-                fillstyle="none",
-                lw=0,
-                color=colorslist[no],
-            )
-            plt.plot(
-                range(len(avg[args.time])),
-                df_min[args.time].to_numpy(),
-                marker=6,
-                fillstyle="none",
-                lw=0,
-                color=colorslist[no],
-            )
-        plt.plot(
+        plt.errorbar(
             range(len(avg[args.time])),
             avg[args.time].to_numpy(),
+            yerr=[
+                avg[args.time].to_numpy() - df_min[args.time].to_numpy(),
+                df_max[args.time].to_numpy() - avg[args.time].to_numpy(),
+            ],
             marker="o",
             fillstyle="none",
             color=colorslist[no],
             label=((args.desciption2[no][0]) if args.desciption2 else None),
+            capsize=2,
         )
     else:
         df_mins.append(df_min)
