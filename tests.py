@@ -194,6 +194,7 @@ if __name__ == "__main__":
     try:
         # open a cvs file in the result directory and write the header
         # make a copy of the samparams file
+        delete_old_dirs(ask=False)
         shutil.copyfile(config.TEMP_SAMPARAMS, f"{result_dir}/samparams")
         # ask the user for information about the experiment and store the input in a file named comment.txt
         # if the imput is empty, the file will not be created
