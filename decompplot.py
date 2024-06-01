@@ -100,11 +100,17 @@ plt.errorbar(
 )
 
 
-plt.xticks(range(len(params)), params, rotation=35, ha="right", rotation_mode="anchor")
+plt.xticks(
+    range(len(params)),
+    [p if p != "uncomp" else "uncompressed" for p in params],
+    rotation=35,
+    ha="right",
+    rotation_mode="anchor",
+)
 
 
 plt.title("Decompression Performance")
-plt.ylabel("Execution Time (s)")
+plt.ylabel("Execution Time [s]")
 plt.legend(loc="lower right", ncol=2)
 plt.tight_layout()
 

@@ -274,13 +274,21 @@ if args.speedup:
 if args.relative:
     for numberofdf, df_avg in enumerate(df_avgs):
         speedup_values = df_avg[args.time].to_numpy()[0] / df_avg[args.time].to_numpy()
+        speedup_max = (
+            df_avg[args.time].to_numpy()[0] / df_mins[numberofdf][args.time].to_numpy()
+        )
+        speedup_min = (
+            df_avg[args.time].to_numpy()[0] / df_maxs[numberofdf][args.time].to_numpy()
+        )
         print("speedup" + str(speedup_values))
-        plt.plot(
+        plt.errorbar(
             range(len(df_avg[args.time])),
             speedup_values,
+            yerr=[speedup_values - speedup_min, speedup_max - speedup_values],
             marker="o",
             fillstyle="none",
             label=(args.desciption2[numberofdf][0]).replace("\\n", "\n"),
+            capsize=2,
         )
 
 # Add labels and title

@@ -116,6 +116,7 @@ df_mins = []
 df_maxs = []
 plt.figure(figsize=(4.804, 3))
 plt.rcParams.update({"font.family": "serif", "font.serif": []})
+plt.rcParams.update({"font.size": 9})
 
 print(args.filename2)
 print(args.desciption2)
@@ -181,21 +182,32 @@ for no, file in enumerate([item for row in args.filename2 for item in row]):
 
 speedup_values = []
 if args.speedup:
-    speedup_values = df_avgs[0][args.time].to_numpy() / df_avgs[1][args.time].to_numpy()
-    label = (
-        (args.desciption2[0][0] + " / " + args.desciption2[1][0])
-        if args.desciption2
-        else None
-    )
     plt.gca().axhline(1, linestyle="--", color="r", linewidth=0.5)
-
-    plt.plot(
-        range(len(df_avgs[0][args.time])),
-        speedup_values,
-        marker="o",
-        fillstyle="none",
-        label=label,
-    )
+    for numberofdf, df_avg in enumerate(df_avgs):
+        speedup_values = df_avgs[0][args.time].to_numpy() / df_avg[args.time].to_numpy()
+        speedup_max = (
+            df_avgs[0][args.time].to_numpy() / df_mins[numberofdf][args.time].to_numpy()
+        )
+        speedup_min = (
+            df_avgs[0][args.time].to_numpy() / df_maxs[numberofdf][args.time].to_numpy()
+        )
+        # plt.plot(
+        #     range(len(df_avgs[0][args.time])),
+        #     speedup_values,
+        #     # marker="o",
+        #     fillstyle="none",
+        #     label=(args.desciption2[numberofdf][0].replace("\\n", "\n")),
+        # )
+        plt.errorbar(
+            range(len(df_avg[args.time])),
+            speedup_values,
+            yerr=[speedup_values - speedup_min, speedup_max - speedup_values],
+            marker="o",
+            fillstyle="none",
+            color=colorslist[numberofdf],
+            label=(args.desciption2[numberofdf][0].replace("\\n", "\n")),
+            capsize=2,
+        )
 
 
 # Add labels and title

@@ -2,7 +2,9 @@ from matplotlib import pyplot as plt
 import pandas as pd
 import re
 
-plt.rcParams.update({"font.family": "serif", "font.serif": []})
+plt.rcParams.update({"font.family": "CMU Serif"})
+plt.rcParams.update({"font.size": 9})
+plt.rcParams.update({"hatch.color": "white"})
 
 fig, axs = plt.subplots(
     5,
@@ -19,7 +21,7 @@ fig, axs = plt.subplots(
 )
 
 fig.text(0.5, 0.001, "Number of Threads", ha="center")
-fig.text(0.001, 0.5, "Relative Time", va="center", rotation="vertical")
+fig.text(0.001, 0.5, "Proportional Time", va="center", rotation="vertical")
 
 directories = [
     "2024-05-09T09:41:50.963904igzip3smallFile",
@@ -100,7 +102,8 @@ for i, directory in enumerate(sorted(directories, key=lambda x: dirs[x])):
         range(len(times_dict)),
         0,
         [times_dict[param]["relative_decompression_time"] for param in times_dict],
-        color="#377eb8",
+        fc="#377eb8",
+        hatch="\\\\\\",
         label="Decompression Time",
     )
     ax.fill_between(
@@ -111,7 +114,8 @@ for i, directory in enumerate(sorted(directories, key=lambda x: dirs[x])):
             + times_dict[param]["relative_sorting_time"]
             for param in times_dict
         ],
-        color="#ff7f00",
+        fc="#ff7f00",
+        hatch="+++",
         label="Sorting Time",
     )
     ax.plot(
@@ -147,7 +151,8 @@ for i, directory in enumerate(sorted(directories, key=lambda x: dirs[x])):
             + times_dict[param]["relative_compression_time"]
             for param in times_dict
         ],
-        color="#e41a1c",
+        fc="#e41a1c",
+        hatch="///",
         label="Compression Time",
     )
     ax.set_xticks(range(len(times_dict)))
@@ -167,12 +172,16 @@ for i, directory in enumerate(sorted(directories, key=lambda x: dirs[x])):
     ax.legend([], [], title=directory_name, loc="upper center")
 
 # plot a legend with the same colors as the plot
-axs[4, 1].fill_between([], [], color="#377eb8", label="Decompression Time")
-axs[4, 1].fill_between([], [], color="#ff7f00", label="Sorting Time")
-axs[4, 1].fill_between([], [], color="#e41a1c", label="Compression Time")
+axs[4, 1].fill_between(
+    [], [], hatch="///", fc="#e41a1c", label="Compression", alpha=0.99
+)
+axs[4, 1].fill_between([], [], hatch="+++", fc="#ff7f00", label="Sorting")
+axs[4, 1].fill_between([], [], hatch="\\\\\\", fc="#377eb8", label="Decompression")
+
+
 axs[4, 1].legend(loc="lower right")
 axs[4, 1].axis("off")
 
-fig.suptitle("Relative Execution Times")
+fig.suptitle("Proportional Time for Decompression, Sorting, and Compression")
 
 plt.show()

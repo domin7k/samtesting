@@ -8,7 +8,7 @@ for l in range(10):
             + str(t)
             + " -l "
             + str(l)
-            + " ../sorted/outputOfTest_1/unsortedLevel0.bam | pv -f > /dev/null",
+            + " ../sorted/compressed/uncomp.bam | pv -f > /dev/null",
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
             shell=True,
