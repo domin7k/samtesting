@@ -82,20 +82,33 @@ print(df)
 fig = plt.figure(figsize=(4.804, 3.8))
 ax = fig.add_subplot()
 
-plt.plot(
+plt.errorbar(
     0,
     -2000,
+    yerr=0,
     marker="o",
     fillstyle="none",
     label=f"Level 0",
+    capsize=2,
 )
+median = df.groupby("level").median()
+max = df.groupby("level").max()
+min = df.groupby("level").min()
+
 for l in range(1, 10):
-    plt.plot(
+    plt.errorbar(
         range(5),
-        df[["1t", "2t", "4t", "8t", "16t"]].iloc[l],
+        median[["1t", "2t", "4t", "8t", "16t"]].iloc[l],
+        yerr=[
+            median[["1t", "2t", "4t", "8t", "16t"]].iloc[l]
+            - min[["1t", "2t", "4t", "8t", "16t"]].iloc[l],
+            max[["1t", "2t", "4t", "8t", "16t"]].iloc[l]
+            - median[["1t", "2t", "4t", "8t", "16t"]].iloc[l],
+        ],
         marker="o",
         fillstyle="none",
         label=f"Level {l}",
+        capsize=2,
     )
 
 
@@ -103,19 +116,26 @@ plt.legend(ncol=2)
 plt.xlabel("Number of Threads")
 plt.ylabel("Throughput [MiB/s]")
 plt.xticks(range(5), [1, 2, 4, 8, 16])
-plt.ylim(bottom=0, top=400)
+plt.ylim(bottom=0, top=900)
 plt.title("Compression Troughput at Different Levels")
 plt.tight_layout()
 
 
 inset = inset_axes(ax, width=1.3, height=1, loc=3, bbox_to_anchor=(65, 130))
 for l in range(0, 10):
-    plt.plot(
+    plt.errorbar(
         range(5),
-        df[["1t", "2t", "4t", "8t", "16t"]].iloc[l],
+        median[["1t", "2t", "4t", "8t", "16t"]].iloc[l],
+        yerr=[
+            median[["1t", "2t", "4t", "8t", "16t"]].iloc[l]
+            - min[["1t", "2t", "4t", "8t", "16t"]].iloc[l],
+            max[["1t", "2t", "4t", "8t", "16t"]].iloc[l]
+            - median[["1t", "2t", "4t", "8t", "16t"]].iloc[l],
+        ],
         marker="o",
         fillstyle="none",
         label=f"Level {l}",
+        capsize=2,
     )
 plt.xticks(range(5), [1, 2, 4, 8, 16])
 plt.gca().yaxis.tick_right()
