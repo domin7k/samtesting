@@ -92,7 +92,7 @@ plt.plot(x, y3, label="Up to 1019 temporary files")
 # plt.plot(x, y4, label="allways max tmps with up to 1024 tmp files")
 plt.xlabel("Number of Temporary Files")
 plt.ylabel("Writes (in Memory Size)")
-plt.title("Comparison of merge strategies")
+plt.title("Comparison of Merge Strategies")
 plt.legend()
 
 plt.tight_layout()

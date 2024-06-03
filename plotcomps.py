@@ -117,7 +117,7 @@ plt.xlabel("Number of Threads")
 plt.ylabel("Throughput [MiB/s]")
 plt.xticks(range(5), [1, 2, 4, 8, 16])
 plt.ylim(bottom=0, top=900)
-plt.title("Compression Troughput at Different Levels")
+plt.title("Compression Throughput at Compression Levels")
 plt.tight_layout()
 
 
