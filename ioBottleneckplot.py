@@ -342,28 +342,28 @@ if args.desciption2:
         ncol=args.ncols,
     )
 
-axins = zoomed_inset_axes(ax, 3, loc=1, bbox_to_anchor=(465, 240))
-for numberofdf, median in enumerate(df_avgs):
-    plt.errorbar(
-        range(len(median[args.time])),
-        median[args.time].to_numpy(),
-        yerr=[
-            median[args.time].to_numpy() - df_mins[numberofdf][args.time].to_numpy(),
-            df_maxs[numberofdf][args.time].to_numpy() - median[args.time].to_numpy(),
-        ],
-        marker="o",
-        fillstyle="none",
-        color=colorslist[numberofdf],
-        # label=(
-        #     (args.desciption2[no][0].replace("\\n", "\n")) if args.desciption2 else None
-        # ),
-        capsize=2,
-        linestyle=":" if numberofdf > 3 else "--" if numberofdf > 2 else "-",
-    )
-axins.set_xlim(3.7, 4.15)
-axins.set_ylim(13.5, 27)
-axins.set_xticks([])
-mark_inset(ax, axins, loc1=1, loc2=3, fc="none", ec="0.5")
+# axins = zoomed_inset_axes(ax, 3, loc=1, bbox_to_anchor=(465, 240))
+# for numberofdf, median in enumerate(df_avgs):
+#     plt.errorbar(
+#         range(len(median[args.time])),
+#         median[args.time].to_numpy(),
+#         yerr=[
+#             median[args.time].to_numpy() - df_mins[numberofdf][args.time].to_numpy(),
+#             df_maxs[numberofdf][args.time].to_numpy() - median[args.time].to_numpy(),
+#         ],
+#         marker="o",
+#         fillstyle="none",
+#         color=colorslist[numberofdf],
+#         # label=(
+#         #     (args.desciption2[no][0].replace("\\n", "\n")) if args.desciption2 else None
+#         # ),
+#         capsize=2,
+#         linestyle=":" if numberofdf > 3 else "--" if numberofdf > 2 else "-",
+#     )
+# axins.set_xlim(3.7, 4.15)
+# axins.set_ylim(13.5, 27)
+# axins.set_xticks([])
+# mark_inset(ax, axins, loc1=1, loc2=3, fc="none", ec="0.5")
 
 plt.tight_layout()
 
