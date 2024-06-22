@@ -224,70 +224,95 @@ for no, file in enumerate([item for row in args.filename2 for item in row]):
         #         lw=0,
         #         color=colorslist[no],
         #     )
-        plt.errorbar(
-            range(len(median[args.time])),
-            median[args.time].to_numpy(),
-            yerr=[
-                median[args.time].to_numpy() - df_min[args.time].to_numpy(),
-                df_max[args.time].to_numpy() - median[args.time].to_numpy(),
-            ],
-            marker="o",
-            fillstyle="none",
-            color=colorslist[no],
-            label=(
-                (args.desciption2[no][0].replace("\\n", "\n"))
-                if args.desciption2
-                else None
-            ),
-            capsize=2,
-            # line style
-            linestyle=":" if no > 3 else "--" if no > 2 else "-",
-        )
+        # plt.errorbar(
+        #     range(len(median[args.time])),
+        #     median[args.time].to_numpy(),
+        #     yerr=[
+        #         median[args.time].to_numpy() - df_min[args.time].to_numpy(),
+        #         df_max[args.time].to_numpy() - median[args.time].to_numpy(),
+        #     ],
+        #     marker="o",
+        #     fillstyle="none",
+        #     color=colorslist[no],
+        #     label=(
+        #         (args.desciption2[no][0].replace("\\n", "\n"))
+        #         if args.desciption2
+        #         else None
+        #     ),
+        #     capsize=2,
+        #     # line style
+        #     linestyle=":" if no > 3 else "--" if no > 2 else "-",
+        # )
         df_mins.append(df_min)
         df_maxs.append(df_max)
         df_avgs.append(median)
 
-speedup_values = []
-if args.speedup:
-    plt.gca().axhline(1, linestyle="--", color="r", linewidth=0.5)
-    for numberofdf, df_avg in enumerate(df_avgs):
-        speedup_values = df_avgs[0][args.time].to_numpy() / df_avg[args.time].to_numpy()
-        speedup_max = (
-            df_avgs[0][args.time].to_numpy() / df_mins[numberofdf][args.time].to_numpy()
-        )
-        speedup_min = (
-            df_avgs[0][args.time].to_numpy() / df_maxs[numberofdf][args.time].to_numpy()
-        )
-        # plt.plot(
-        #     range(len(df_avgs[0][args.time])),
-        #     speedup_values,
-        #     # marker="o",
-        #     fillstyle="none",
-        #     label=(args.desciption2[numberofdf][0].replace("\\n", "\n")),
-        # )
-        plt.errorbar(
-            range(len(df_avg[args.time])),
-            speedup_values,
-            yerr=[speedup_values - speedup_min, speedup_max - speedup_values],
-            marker="o",
-            fillstyle="none",
-            color=colorslist[numberofdf],
-            label=(args.desciption2[numberofdf][0].replace("\\n", "\n")),
-            capsize=2,
-        )
+# speedup_values = []
+# if args.speedup:
+#     plt.gca().axhline(1, linestyle="--", color="r", linewidth=0.5)
+#     for numberofdf, df_avg in enumerate(df_avgs):
+#         speedup_values = df_avgs[0][args.time].to_numpy() / df_avg[args.time].to_numpy()
+#         speedup_max = (
+#             df_avgs[0][args.time].to_numpy() / df_mins[numberofdf][args.time].to_numpy()
+#         )
+#         speedup_min = (
+#             df_avgs[0][args.time].to_numpy() / df_maxs[numberofdf][args.time].to_numpy()
+#         )
+#         # plt.plot(
+#         #     range(len(df_avgs[0][args.time])),
+#         #     speedup_values,
+#         #     # marker="o",
+#         #     fillstyle="none",
+#         #     label=(args.desciption2[numberofdf][0].replace("\\n", "\n")),
+#         # )
+#         plt.errorbar(
+#             range(len(df_avg[args.time])),
+#             speedup_values,
+#             yerr=[speedup_values - speedup_min, speedup_max - speedup_values],
+#             marker="o",
+#             fillstyle="none",
+#             color=colorslist[numberofdf],
+#             label=(args.desciption2[numberofdf][0].replace("\\n", "\n")),
+#             capsize=2,
+#         )
 
-if args.relative:
-    for numberofdf, df_avg in enumerate(df_avgs):
-        speedup_values = df_avg[args.time].to_numpy()[0] / df_avg[args.time].to_numpy()
-        print("speedup" + str(speedup_values))
-        plt.plot(
-            range(len(df_avg[args.time])),
-            speedup_values,
-            marker="o",
-            fillstyle="none",
-            label=(args.desciption2[numberofdf][0]).replace("\\n", "\n"),
-        )
+# if args.relative:
+#     for numberofdf, df_avg in enumerate(df_avgs):
+#         speedup_values = df_avg[args.time].to_numpy()[0] / df_avg[args.time].to_numpy()
+#         print("speedup" + str(speedup_values))
+#         plt.plot(
+#             range(len(df_avg[args.time])),
+#             speedup_values,
+#             marker="o",
+#             fillstyle="none",
+#             label=(args.desciption2[numberofdf][0]).replace("\\n", "\n"),
+#         )
 
+for numberofdf, median in reversed(list(enumerate(df_avgs[:3]))):
+    plt.errorbar(
+        range(len(median[args.time])),
+        median[args.time].to_numpy() / df_avgs[numberofdf + 3][args.time].to_numpy(),
+        yerr=[
+            -median[args.time].to_numpy()
+            / df_maxs[numberofdf + 3][args.time].to_numpy()
+            + median[args.time].to_numpy()
+            / df_avgs[numberofdf + 3][args.time].to_numpy(),
+            median[args.time].to_numpy() / df_mins[numberofdf + 3][args.time].to_numpy()
+            - median[args.time].to_numpy()
+            / df_avgs[numberofdf + 3][args.time].to_numpy(),
+        ],
+        marker="o",
+        fillstyle="none",
+        color=colorslist[numberofdf],
+        label=(
+            (args.desciption2[numberofdf][0].replace("\\n", "\n"))
+            if args.desciption2
+            else None
+        ),
+        capsize=2,
+    )
+
+plt.legend()
 # Add labels and title
 plt.xlabel(args.paramname if args.paramname else param)
 plt.ylim(bottom=0)
@@ -330,17 +355,17 @@ else:
 # Set xticks
 plt.xticks(range(len(median[args.time])), median[param])
 
-if args.desciption2:
-    handles, labels = plt.gca().get_legend_handles_labels()
-    if not args.speedup:
-        order = [a[1] for a in sorted(max_values, key=lambda x: x[0], reverse=True)]
-    else:
-        order = [a[1] for a in sorted(max_values, key=lambda x: x[0], reverse=False)]
-    plt.legend(
-        [handles[idx] for idx in order],
-        [labels[idx] for idx in order],
-        ncol=args.ncols,
-    )
+# if args.desciption2:
+#     handles, labels = plt.gca().get_legend_handles_labels()
+#     if not args.speedup:
+#         order = [a[1] for a in sorted(max_values, key=lambda x: x[0], reverse=True)]
+#     else:
+#         order = [a[1] for a in sorted(max_values, key=lambda x: x[0], reverse=False)]
+#     plt.legend(
+#         [handles[idx] for idx in order],
+#         [labels[idx] for idx in order],
+#         ncol=args.ncols,
+#     )
 
 # axins = zoomed_inset_axes(ax, 3, loc=1, bbox_to_anchor=(465, 240))
 # for numberofdf, median in enumerate(df_avgs):
